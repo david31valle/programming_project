@@ -1,6 +1,3 @@
-//
-// Created by David Valle on 19-Nov-24.
-//
 #include <iostream>
 int sum(int a, int b);
 
