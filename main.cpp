@@ -1,22 +1,35 @@
 #include <iostream>
 #include "Eigen/Dense"
+#include "node/node.hpp"
+
 
 int main() {
     // Define a 1x3 row vector
-    Eigen::RowVector3d rowVector;
-    rowVector << 1.0, 2.0, 3.0;
+    int problem_dimension=1;
+    int element_order=1;
+    int domain_size=1;
+    int partition=10;
+    int lambda=100;
+    int mu=10;
+    double d=0.5;
+    int steps=0.5;
+    std::string deformation_type= "EXT";
+    int max_iteration=10;
+    double tol=1e-10;
+    std::string boundary_condition="DBC";
+    std::string gauss_points_values="On";
 
-    // Define a 3x3 matrix
-    Eigen::Matrix3d matrix;
-    matrix << 1.0, 2.0, 3.0,
-            4.0, 5.0, 6.0,
-            7.0, 8.0, 9.0;
+    switch (problem_dimension) {
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+    }
+    // Initialize vectors with appropriate sizes and values
 
-    // Multiply the vector with the matrix
-    Eigen::RowVector3d result = rowVector * matrix;
 
-    std::cout << "Result of vector-matrix multiplication:" << std::endl;
-    std::cout << result << std::endl;
 
     return 0;
 }

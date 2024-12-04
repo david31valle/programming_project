@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "programming_project::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-programming_project-Debug-c4a32d21afd2596304f3.json",
+					"jsonFile" : "target-programming_project-Debug-5524065d6183a5abfeec.json",
 					"name" : "programming_project",
 					"projectIndex" : 0
 				}
@@ -49,12 +49,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "D:/Maitreya_Docs/Education/MS_in_Deutschland/FAU-Erlangen/Comp_Eng/Studies/3_WiSe_2024-25/FEM Project/Coupled-FEM/cmake-build-debug",
-		"source" : "D:/Maitreya_Docs/Education/MS_in_Deutschland/FAU-Erlangen/Comp_Eng/Studies/3_WiSe_2024-25/FEM Project/Coupled-FEM"
+		"build" : "C:/Users/drva_/CLionProjects/programming_project/cmake-build-debug",
+		"source" : "C:/Users/drva_/CLionProjects/programming_project"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 7
+		"minor" : 5
 	}
 }

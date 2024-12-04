@@ -1,0 +1,23 @@
+# ninja log v5
+0	2939	7537291819845685	CMakeFiles/programming_project.dir/main.cpp.obj	7e85c02e09952402
+2960	3335	7537291823801180	programming_project.exe	c5961f5df16c751f
+20	2268	7550275343445135	CMakeFiles/programming_project.dir/main.cpp.obj	7e85c02e09952402
+10	2290	7550275343668681	CMakeFiles/programming_project.dir/node/node.cpp.obj	960c448e595f88bb
+2290	2749	7550275348233945	programming_project.exe	370153c99c7f65e1
+12	2663	7550276409033478	CMakeFiles/programming_project.dir/main.cpp.obj	7e85c02e09952402
+7	2768	7550276410068920	CMakeFiles/programming_project.dir/node/node.cpp.obj	960c448e595f88bb
+2769	2956	7550276411888115	programming_project.exe	370153c99c7f65e1
+6	1728	7550277253283700	CMakeFiles/programming_project.dir/main.cpp.obj	7e85c02e09952402
+1729	1866	7550277254585677	programming_project.exe	370153c99c7f65e1
+7	1685	7550278717015149	CMakeFiles/programming_project.dir/main.cpp.obj	7e85c02e09952402
+1686	1820	7550278718320347	programming_project.exe	370153c99c7f65e1
+9	2569	7550280181754015	CMakeFiles/programming_project.dir/node/node.cpp.obj	960c448e595f88bb
+2569	2749	7550280183507662	programming_project.exe	370153c99c7f65e1
+8	2659	7550459907705442	CMakeFiles/programming_project.dir/node/node.cpp.obj	960c448e595f88bb
+2659	2917	7550459910230400	programming_project.exe	370153c99c7f65e1
+6	1852	7550460334922845	CMakeFiles/programming_project.dir/main.cpp.obj	7e85c02e09952402
+1853	2016	7550460336477154	programming_project.exe	370153c99c7f65e1
+7	2236	7550461087082781	CMakeFiles/programming_project.dir/node/node.cpp.obj	960c448e595f88bb
+2237	2413	7550461088790871	programming_project.exe	370153c99c7f65e1
+5	1964	7550463027051701	CMakeFiles/programming_project.dir/main.cpp.obj	7e85c02e09952402
+1965	2245	7550463029876620	programming_project.exe	370153c99c7f65e1
