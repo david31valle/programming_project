@@ -5,4 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(programming_project
         main.cpp
-        Eigen)
+        Eigen
+        node/node.hpp
+        node/node.cpp)
