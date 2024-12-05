@@ -11,7 +11,7 @@
 class Mesh_1D {
 private:
     // Initializing the variables
-    int PD = 0, partition = 0, element_order = 0;
+    int problem_dimension = 0, partition = 0, element_order = 0;
     double domain_size = 0.0;
     std::vector<double> NL, EL_1, EL_2, EL_3;
 
@@ -22,7 +22,7 @@ private:
 
 public:
     // Constructor for Mesh_1D
-    Mesh_1D(int PD, double domain_size, int partition, int element_order);
+    Mesh_1D(int problem_dimension, double domain_size, int partition, int element_order);
 
     // Generation of mesh
     void generate_mesh();

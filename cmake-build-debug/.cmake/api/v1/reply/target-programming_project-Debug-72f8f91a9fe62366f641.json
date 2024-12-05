@@ -96,7 +96,15 @@
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				1
+				1,
+				2
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				3
 			]
 		}
 	],
@@ -112,6 +120,16 @@
 			"backtrace" : 1,
 			"path" : "Eigen",
 			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "Preprocess",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "Preprocess/Mesh_1D.hpp",
+			"sourceGroupIndex" : 2
 		}
 	],
 	"type" : "EXECUTABLE"
