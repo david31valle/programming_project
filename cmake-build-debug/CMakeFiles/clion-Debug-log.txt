@@ -11,6 +11,6 @@
 -- Check for working CXX compiler: D:/C++/CLion/CLion 2024.2.2/bin/mingw/bin/g++.exe - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
--- Configuring done (4.2s)
+-- Configuring done (1.0s)
 -- Generating done (0.0s)
 -- Build files have been written to: D:/Maitreya_Docs/Education/MS_in_Deutschland/FAU-Erlangen/Comp_Eng/Studies/3_WiSe_2024-25/FEM Project/Coupled-FEM/cmake-build-debug
