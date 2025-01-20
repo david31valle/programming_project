@@ -7,4 +7,7 @@ add_executable(programming_project
         main.cpp
         Eigen
         node/node.hpp
-        node/node.cpp)
+        node/node.cpp
+        initialization/Initialize.hpp
+        element/element.hpp
+        element/element.cpp)
