@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/programming_project.dir/Preprocess/Mesh_1D.cpp.obj"
+  "CMakeFiles/programming_project.dir/Preprocess/Mesh_1D.cpp.obj.d"
   "CMakeFiles/programming_project.dir/main.cpp.obj"
   "CMakeFiles/programming_project.dir/main.cpp.obj.d"
   "libprogramming_project.dll.a"
