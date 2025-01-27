@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Eigen/Dense"
 #include "node/node.hpp"
-
+#include "preprocess/mesh_1D.hpp"
 
 int main() {
     // Define a 1x3 row vector
@@ -29,7 +29,26 @@ int main() {
     }
     // Initialize vectors with appropriate sizes and values
 
+    //---------------- Mesh ----------------
+    mesh_1D mesh(problem_dimension, domain_size, partition, element_order);
+    mesh.generate_mesh();
 
+    // Retrieve nodes and elements
+    //const Eigen::VectorXd nodes = mesh.getNodes();
+    //const Eigen::MatrixXd elements = mesh.getElements();
+    std::vector<double> nodes = mesh.getNodeList();
+    std::vector<std::pair<int, int>> elements = mesh.getElementList();
 
-    return 0;
+    // Print Nodes and Elements (for testing purposes)
+    //std::cout << "Nodes:\n" << nodes << std::endl;
+    //std::cout << "Elements:\n" << elements << std::endl;
+    std::cout << "Nodes:\n";
+    for (const auto& node : nodes) {
+        std::cout << node << " ";
+    }
+    std::cout << "\nElements:\n";
+    for (const auto& element : elements)
+    {
+        std::cout << '[' << element.first << ", " << element.second << "] "<< std::endl;
+    }
 }
