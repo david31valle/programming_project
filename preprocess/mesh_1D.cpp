@@ -1,19 +1,15 @@
-//
-// Created by trueno on 10/13/24.
-//
-
-#include "Mesh_1D.hpp"
+#include "mesh_1D.hpp"
 #include <vector>
 
 // Constructor definition
-Mesh_1D::Mesh_1D(const int problem_dimension, const double domain_size, const int partition, const int element_order)
+mesh_1D::mesh_1D(const int problem_dimension, const double domain_size, const int partition, const int element_order)
     : problem_dimension(problem_dimension), domain_size(domain_size), partition(partition), element_order(element_order) {}
 
-void Mesh_1D::generate_mesh() {
+void mesh_1D::generate_mesh() {
     generateIndividualMesh();
 }
 
-void Mesh_1D::generateIndividualMesh() {
+void mesh_1D::generateIndividualMesh() {
 
     const int degree = element_order;
     const int number_of_nodes = degree * partition + 1;
@@ -38,10 +34,10 @@ void Mesh_1D::generateIndividualMesh() {
     }
 }
 
-const std::vector<double>& Mesh_1D::getNodeList() const {
+std::vector<double>& mesh_1D::getNodeList() {
     return node_list;
 }
 
-const std::vector<std::pair<int, int>>& Mesh_1D::getElementList() const {
+std::vector<std::pair<int, int>>& mesh_1D::getElementList() {
     return element_list;
 }
