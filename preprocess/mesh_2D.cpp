@@ -1,54 +1,129 @@
 //
-// Created by Maitreya Limkar on 24-10-2024.
+// Created by Maitreya Limkar on 17-02-2025.
 //
 
-#include "Mesh_2D.hpp"
-#include <vector>
+#include "mesh_2D.hpp"
+#include <iostream>
+#include <unordered_map>
+#include <algorithm>
 
-// Constructor definition
-Mesh_2D::Mesh_2D(const int PD, const double domain_size, const int partition, const int element_order)
-    : PD(PD), domain_size(domain_size), partition(partition), element_order(element_order) {}
+// Custom hash function for std::pair (for unique coordinate storage)
+struct PairHash {
+    template <typename T1, typename T2>
+    std::size_t operator()(const std::pair<T1, T2>& p) const {
+        return std::hash<T1>()(p.first) ^ (std::hash<T2>()(p.second) << 1);
+    }
+};
 
-void Mesh_2D::generate_mesh() {
-    generateIndividualMesh();
-}
+// Constructor
+Mesh_2D::Mesh_2D(double domain_size, int partition, const std::vector<int>& element_orders)
+    : domain_size(domain_size), partition(partition), element_orders(element_orders) {}
 
-void Mesh_2D::generateIndividualMesh() {
-
-    const int degree = element_order;
-    const int NoN = degree * partition + 1;
-    const int NoE = partition;
-    const int NPE = degree + 1;
-
-    const double dx = domain_size / (degree * partition);
-
-    // Generate Nodes
-    nodes.resize(NoN);
-    for (int i = 0; i < NoN; ++i) {
-        nodes[i] = i * dx;
+// Main mesh generation method
+void Mesh_2D::generateMesh() {
+    for (const auto& degree : element_orders) {
+        NodeList_2D nl;
+        ElementList el;
+        generateIndividualMesh(degree, nl, el);
+        node_lists.push_back(nl);
+        element_lists.push_back(el);
     }
 
-    // Generate Elements
-    elements.resize(NoE, std::vector<double>(NPE));
-    for (int i = 0; i < NoE; ++i) {
-        for (int j = 0; j < NPE; ++j) {
-            if (i == 0 && j == 0) {
-                elements[i][j] = 1;
-            }
-            else if (j == 0) {
-                elements[i][j] = elements[i - 1][NPE - 1];
-            }
-            else {
-                elements[i][j] = elements[i][j - 1] + 1;
+    if (element_orders.size() > 1) {
+        mergeNodeLists();
+        updateElementLists();
+    } else {
+        merged_node_list = node_lists[0];
+    }
+}
+
+// Generate nodes and elements for a given degree
+void Mesh_2D::generateIndividualMesh(int degree, NodeList_2D& nl, ElementList& el) const {
+    int num_nodes_per_dim = degree * partition + 1;  // Total nodes in each dimension
+    int num_elements = partition * partition;        // Total elements
+
+    double dx = domain_size / (degree * partition);  // Node spacing
+
+    // Generate Nodes
+    nl.resize(num_nodes_per_dim * num_nodes_per_dim, 2);
+    int index = 0;
+    for (int j = 0; j < num_nodes_per_dim; ++j) {
+        for (int i = 0; i < num_nodes_per_dim; ++i) {
+            nl(index, 0) = i * dx;  // X-coordinate
+            nl(index, 1) = j * dx;  // Y-coordinate
+            ++index;
+        }
+    }
+
+    // Generate Elements (linear degree case)
+    el.reserve(num_elements);
+    for (int j = 0; j < partition; ++j) {
+        for (int i = 0; i < partition; ++i) {
+            // Node indices (1-based indexing for MATLAB-style output)
+            int n1 = j * num_nodes_per_dim + i + 1;       // Bottom-left
+            int n2 = n1 + 1;             // Bottom-right
+            int n4 = n1 + num_nodes_per_dim;                            // Top-left
+            int n3 = n4 + 1;                             // Top-right
+
+            // Store the element in the correct clockwise order
+            el.push_back({n1, n2, n3, n4});
+        }
+    }
+}
+
+
+// Merge multiple node lists without duplication
+void Mesh_2D::mergeNodeLists() {
+    std::vector<std::pair<double, double>> combined_nodes;
+    for (const auto& nl : node_lists) {
+        for (int i = 0; i < nl.rows(); ++i) {
+            combined_nodes.emplace_back(nl(i, 0), nl(i, 1));
+        }
+    }
+
+    std::sort(combined_nodes.begin(), combined_nodes.end());
+    combined_nodes.erase(std::unique(combined_nodes.begin(), combined_nodes.end()), combined_nodes.end());
+
+    merged_node_list.resize(combined_nodes.size(), 2);
+    for (size_t i = 0; i < combined_nodes.size(); ++i) {
+        merged_node_list(i, 0) = combined_nodes[i].first;
+        merged_node_list(i, 1) = combined_nodes[i].second;
+    }
+}
+
+// Update element indices based on merged node list
+void Mesh_2D::updateElementLists() {
+    std::unordered_map<std::pair<double, double>, int, PairHash> node_map;
+    for (int i = 0; i < merged_node_list.rows(); ++i) {
+        node_map[{merged_node_list(i, 0), merged_node_list(i, 1)}] = i + 1; // 1-based index
+    }
+
+    for (size_t i = 0; i < element_lists.size(); ++i) {
+        for (auto& element : element_lists[i]) {
+            for (auto& node : element) {
+                auto& nl = node_lists[i];
+                int row = (node - 1);
+                node = node_map[{nl(row, 0), nl(row, 1)}];
             }
         }
     }
 }
 
-std::vector<double> Mesh_2D::getNodes() {
-    return nodes;
+// Print mesh (for debugging)
+void Mesh_2D::printMesh() const {
+    std::cout << "Nodes (x, y):\n" << merged_node_list << "\n";
+
+    for (size_t i = 0; i < element_lists.size(); ++i) {
+        std::cout << "Elements (Order " << element_orders[i] << "):\n";
+        for (const auto& element : element_lists[i]) {
+            for (const auto& node : element) {
+                std::cout << node << " ";
+            }
+            std::cout << "\n";
+        }
+    }
 }
 
-std::vector<std::vector<double>> Mesh_2D::getElements() {
-    return elements;
-}
+// Accessors
+NodeList_2D Mesh_2D::getNodeList() const { return merged_node_list; }
+std::vector<ElementList> Mesh_2D::getElementLists() const { return element_lists; }

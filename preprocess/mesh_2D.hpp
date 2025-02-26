@@ -1,35 +1,46 @@
 //
-// Created by Maitreya Limkar on 24-10-2024.
+// Created by Maitreya Limkar on 17-02-2025.
 //
 
 #ifndef MESH_2D_HPP
 #define MESH_2D_HPP
 
+#include "../Eigen/Dense"
 #include <vector>
+
+// Type aliases for clarity
+using NodeList_2D = Eigen::MatrixXd;
+using ElementList = std::vector<std::vector<int>>;
 
 // Mesh_2D class declaration
 class Mesh_2D {
-private:
-    // Initializing the variables
-    int PD = 0, partition = 0, element_order = 0;
-    double domain_size = 0.0;
-    std::vector<double> NL, EL_1, EL_2, EL_3;
-
-    std::vector<double> nodes;
-    std::vector<std::vector<double>> elements;
-
-    void generateIndividualMesh();
-
 public:
-    // Constructor for Mesh_2D
-    Mesh_2D(int PD, double domain_size, int partition, int element_order);
+    // Constructor
+    Mesh_2D(double domain_size, int partition, const std::vector<int>& element_orders);
 
-    // Generation of mesh
-    void generate_mesh();
+    // Main methods
+    void generateMesh();
+    void printMesh() const;
 
-    // Getters for nodes and elements
-    std::vector<double> getNodes();
-    std::vector<std::vector<double>> getElements();
+    // Accessors
+    [[nodiscard]] NodeList_2D getNodeList() const;
+    [[nodiscard]] std::vector<ElementList> getElementLists() const;
+
+private:
+    // Input parameters
+    double domain_size;
+    int partition;
+    std::vector<int> element_orders;
+
+    // Storage for mesh
+    std::vector<NodeList_2D> node_lists;        // Nodes for each element order
+    std::vector<ElementList> element_lists;  // Elements for each order
+    NodeList_2D merged_node_list;               // Combined node list
+
+    // Helper methods
+    void generateIndividualMesh(int degree, NodeList_2D& nl, ElementList& el) const;
+    void mergeNodeLists();
+    void updateElementLists();
 };
 
 #endif //MESH_2D_HPP
