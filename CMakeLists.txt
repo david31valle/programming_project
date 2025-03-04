@@ -14,4 +14,19 @@ add_executable(programming_project
         node/node.cpp
         initialization/Initialize.hpp
         element/element.hpp
-        element/element.cpp)
+        element/element.cpp
+        utils/utils.hpp
+        utils/utils.cpp
+        utils/utils.cpp
+        Problem/Problem.cpp
+        Problem/Problem.cpp
+        Problem/problem.hpp)
+
+add_executable(testing
+        tests.cpp
+        utils/utils.hpp
+        utils/utils.cpp
+        element/element.hpp
+        element/element.cpp
+        Problem/Problem.cpp
+        Problem/problem.hpp)
