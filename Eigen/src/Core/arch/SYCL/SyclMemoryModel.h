@@ -142,7 +142,7 @@ class PointerMapper {
   using buffer_t = cl::sycl::buffer_mem;
 
   /**
-   * Node that stores information about a device allocation.
+   * node that stores information about a device allocation.
    * Nodes are sorted by size to organise a free list of nodes
    * that can be recovered.
    */

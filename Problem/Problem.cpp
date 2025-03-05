@@ -1,55 +1,55 @@
 
 #include "../Eigen/Dense"
-#include "../Eigen/src/SparseCore/SparseMatrix.h"
+#include "../Eigen/Sparse"
 #include <vector>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include "problem.hpp"
-#include "../Node/Node.hpp"
-#include "../Element/Element.cpp"
+#include "../node/node.hpp"
+#include "../element/element.cpp"
 
 
 //Auxiliary functions
-std::pair<std::vector<Node>, std::vector<int>> Assign_BC(
-        std::vector<Node>& NL,
+std::pair<std::vector<node>, std::vector<int>> Assign_BC(
+        std::vector<node>& NL,
         double domain_size,
         std::string BC_type,
         const Eigen::MatrixXd& F
 );
 
-std::pair<std::vector<Node>, std::vector<int>> Assign_DOF_DBC(std::vector<Node>& NL);
+std::pair<std::vector<node>, std::vector<int>> Assign_DOF_DBC(std::vector<node>& NL);
 
-std::pair<std::vector<Node>, std::vector<Element>> prescribe(std::vector<Node>& NL, std::vector<Element>& EL, double LF);
+std::pair<std::vector<node>, std::vector<element>> prescribe(std::vector<node>& NL, std::vector<element>& EL, double LF);
 
-void problemInfo(int PD,
-                 const std::vector<Node>& NL,
-                 const std::vector<Element>& EL,
+void problemInfo(int problem_dimension,
+                 const std::vector<node>& NL,
+                 const std::vector<element>& EL,
                  const std::vector<int>& DOFs,  // Changed DOFs to vector<int>
                  int element_order,
                  const std::string& filename);
 
-std::pair<std::vector<Node>, int> Assign_GP_DOFs(std::vector<Node>& NL);
+std::pair<std::vector<node>, int> Assign_GP_DOFs(std::vector<node>& NL);
 
 std::pair<Eigen::MatrixXd, Eigen::SparseMatrix<double>> Assemble_GP(
-        int PD,
-        const std::vector<Node>& NL,
-        const std::vector<Element>& EL,
+        int problem_dimension,
+        const std::vector<node>& NL,
+        const std::vector<element>& EL,
         int GP_DOFs);
 
 std::vector<double> Residual(
-        int PD,
-        const std::vector<Node>& NL,
-        const std::vector<Element>& EL,
+        int problem_dimension,
+        const std::vector<node>& NL,
+        const std::vector<element>& EL,
         int DOFs,
         double dt);
 
 
 void Problem(
-        int PD,
-        std::vector<Node>& NL,
-        const std::vector<Element>& EL,
+        int problem_dimension,
+        std::vector<node>& NL,
+        const std::vector<element>& EL,
         const int domain_size,
         const std::string BC,
         const std::string DEF,
@@ -62,14 +62,14 @@ void Problem(
 ) {
 
     //Output file Name
-    std::string filename = std::to_string(PD) + "D_Normal_" + std::to_string(EL.size()) +
+    std::string filename = std::to_string(problem_dimension) + "D_Normal_" + std::to_string(EL.size()) +
                            "_EL=_[" + std::to_string(element_order) + "]_.txt";
 
     //---------------------------------------------------------
     //Create BC conditions
-    // Create identity matrix I (PD x PD)
-    Eigen::MatrixXd I = Eigen::MatrixXd::Identity(PD, PD);
-    Eigen::MatrixXd F = Eigen::MatrixXd::Zero(PD, PD);
+    // Create identity matrix I (problem_dimension x problem_dimension)
+    Eigen::MatrixXd I = Eigen::MatrixXd::Identity(problem_dimension, problem_dimension);
+    Eigen::MatrixXd F = Eigen::MatrixXd::Zero(problem_dimension, problem_dimension);
     if (DEF == "EXT") {
         // Case 'EXT': F = I; F(1,1) = 1 + d;
         F = I;
@@ -97,21 +97,21 @@ void Problem(
 
     // Problem information
 
-    problemInfo(PD, NL, EL, DOFs, element_order, filename);
+    problemInfo(problem_dimension, NL, EL, DOFs, element_order, filename);
 
 
 
 }
 
 //-----------------------------------Assign BC--------------------------------------------------------
-std::pair<std::vector<Node>, std::vector<int>> Assign_BC(
-        std::vector<Node>& NL,
+std::pair<std::vector<node>, std::vector<int>> Assign_BC(
+        std::vector<node>& NL,
         double domain_size,
         std::string BC_type,
         const Eigen::MatrixXd& F
 ) {
     int NoNs = NL.size();  // Number of nodes
-    int PD = NL[0].PD;     // Problem dimension (assuming all nodes share the same PD)
+    int problem_dimension = NL[0].problem_dimension;     // Problem dimension (assuming all nodes share the same problem_dimension)
     double tol = 1e-6;
 
     double W = domain_size;  // X-direction (Width)
@@ -119,46 +119,46 @@ std::pair<std::vector<Node>, std::vector<int>> Assign_BC(
     double D = domain_size;  // Z-direction (Depth)
 
     for (int i = 0; i < NoNs; ++i) {
-        std::vector<double>& X = NL[i].X;  // Node position
+        Eigen::MatrixXd& X = NL[i].X_material_position;  // node position
 
-        // Check based on problem dimension PD
-        if (PD == 1) {
-            if (std::fabs(X[0] - 0) < tol || std::fabs(X[0] - W) < tol) {
-                NL[i].BC = std::vector<int>(PD, 0);  // Assign BC as zeros vector (PD x 1)
+        // Check based on problem dimension problem_dimension
+        if (problem_dimension == 1) {
+            if (std::fabs(X(0) - 0) < tol || std::fabs(X[0] - W) < tol) {
+                NL[i].boundary_condition = std::vector<int>(problem_dimension, 0);  // Assign BC as zeros vector (problem_dimension x 1)
 
                 // Eigen multiplication F * X - X
-                Eigen::VectorXd X_eigen(PD);
-                for (int j = 0; j < PD; ++j) X_eigen(j) = X[j];
+                Eigen::VectorXd X_eigen(problem_dimension);
+                for (int j = 0; j < problem_dimension; ++j) X_eigen(j) = X[j];
                 Eigen::VectorXd BCval_eigen = F * X_eigen - X_eigen;
 
-                NL[i].BCval.resize(PD);
-                for (int j = 0; j < PD; ++j) NL[i].BCval[j] = BCval_eigen(j);
+                NL[i].boundary_condition_value.resize(problem_dimension);
+                for (int j = 0; j < problem_dimension; ++j) NL[i].boundary_condition_value[j] = BCval_eigen(j);
             }
         }
-        else if (PD == 2) {
+        else if (problem_dimension == 2) {
             if (std::fabs(X[0] - 0) < tol || std::fabs(X[0] - W) < tol) {
-                NL[i].BC = std::vector<int>(PD, 0);  // Assign BC as zeros vector (PD x 1)
+                NL[i].boundary_condition = std::vector<int>(problem_dimension, 0);  // Assign BC as zeros vector (problem_dimension x 1)
 
                 // Eigen multiplication F * X - X
-                Eigen::VectorXd X_eigen(PD);
-                for (int j = 0; j < PD; ++j) X_eigen(j) = X[j];
+                Eigen::VectorXd X_eigen(problem_dimension);
+                for (int j = 0; j < problem_dimension; ++j) X_eigen(j) = X[j];
                 Eigen::VectorXd BCval_eigen = F * X_eigen - X_eigen;
 
-                NL[i].BCval.resize(PD);
-                for (int j = 0; j < PD; ++j) NL[i].BCval[j] = BCval_eigen(j);
+                NL[i].boundary_condition_value.resize(problem_dimension);
+                for (int j = 0; j < problem_dimension; ++j) NL[i].boundary_condition_value[j] = BCval_eigen(j);
             }
         }
-        else if (PD == 3) {
+        else if (problem_dimension == 3) {
             if (std::fabs(X[0] - 0) < tol || std::fabs(X[0] - W) < tol) {
-                NL[i].BC = std::vector<int>(PD, 0);  // Assign BC as zeros vector (PD x 1)
+                NL[i].boundary_condition = std::vector<int>(problem_dimension, 0);  // Assign BC as zeros vector (problem_dimension x 1)
 
                 // Eigen multiplication F * X - X
-                Eigen::VectorXd X_eigen(PD);
-                for (int j = 0; j < PD; ++j) X_eigen(j) = X[j];
+                Eigen::VectorXd X_eigen(problem_dimension);
+                for (int j = 0; j < problem_dimension; ++j) X_eigen(j) = X[j];
                 Eigen::VectorXd BCval_eigen = F * X_eigen - X_eigen;
 
-                NL[i].BCval.resize(PD);
-                for (int j = 0; j < PD; ++j) NL[i].BCval[j] = BCval_eigen(j);
+                NL[i].boundary_condition_value.resize(problem_dimension);
+                for (int j = 0; j < problem_dimension; ++j) NL[i].boundary_condition_value[j] = BCval_eigen(j);
             }
         }
     }
@@ -172,8 +172,8 @@ std::pair<std::vector<Node>, std::vector<int>> Assign_BC(
 
 
 //-------------------------------Assign DOF DBC---------------------------------------------
-std::pair<std::vector<Node>, std::vector<int>> Assign_DOF_DBC(std::vector<Node>& NL) {
-    int PD = NL[0].PD;  // Problem dimension
+std::pair<std::vector<node>, std::vector<int>> Assign_DOF_DBC(std::vector<node>& NL) {
+    int problem_dimension = NL[0].problem_dimension;  // Problem dimension
     int NoN = NL.size();  // Number of nodes
 
     std::vector<int> DOFs;  // List to store degrees of freedom
@@ -181,8 +181,8 @@ std::pair<std::vector<Node>, std::vector<int>> Assign_DOF_DBC(std::vector<Node>&
     for (int i = 0; i < NoN; ++i) {
         int DOF_counter = 0;
 
-        for (int j = 0; j < PD; ++j) {
-            if (NL[i].BC[j] == 0) {  // If BC (boundary condition) is free
+        for (int j = 0; j < problem_dimension; ++j) {
+            if (NL[i].boundary_condition[j] == 0) {  // If BC (boundary condition) is free
                 DOF_counter++;
                 NL[i].DOF[j] = DOFs.size() + DOF_counter;  // Assign DOF number
             } else {
@@ -191,7 +191,7 @@ std::pair<std::vector<Node>, std::vector<int>> Assign_DOF_DBC(std::vector<Node>&
         }
 
         // Add non-zero DOF values to the DOFs vector
-        for (int j = 0; j < PD; ++j) {
+        for (int j = 0; j < problem_dimension; ++j) {
             if (NL[i].DOF[j] > 0) {
                 DOFs.push_back(NL[i].DOF[j]);
             }
@@ -202,13 +202,13 @@ std::pair<std::vector<Node>, std::vector<int>> Assign_DOF_DBC(std::vector<Node>&
 }
 
 //----------------------------------------Assign GP Degrees of Freedoms-----------------------------------------------
-std::pair<std::vector<Node>, int> Assign_GP_DOFs(std::vector<Node>& NL) {
+std::pair<std::vector<node>, int> Assign_GP_DOFs(std::vector<node>& NL) {
     int NoNs = NL.size();  // Number of nodes
     int GP_DOFs = 0;  // Initialize GP_DOFs counter
 
     // Iterate through all nodes
     for (int i = 0; i < NoNs; ++i) {
-        std::vector<int>& BC = NL[i].GP_BC;  // Boundary condition for Gauss points
+        Eigen::VectorXd& BC = NL[i].gauss_point_BC;  // Boundary condition for Gauss points
         std::vector<int>& DOF = NL[i].GP_DOF;  // Degrees of freedom for Gauss points
 
         // If any element of BC is 1, increment GP_DOFs and assign to DOF
@@ -223,9 +223,9 @@ std::pair<std::vector<Node>, int> Assign_GP_DOFs(std::vector<Node>& NL) {
 
 //----------------------------Problem info-------------------------------
 
-void problemInfo(int PD,
-                 const std::vector<Node>& NL,
-                 const std::vector<Element>& EL,
+void problemInfo(int problem_dimension,
+                 const std::vector<node>& NL,
+                 const std::vector<element>& EL,
                  const std::vector<int>& DOFs,  // Changed DOFs to vector<int>
                  int element_order,
                  const std::string& filename)
@@ -238,7 +238,7 @@ void problemInfo(int PD,
     std::cout << "======================================================" << std::endl;
     std::cout << "================  Problem information  ===============" << std::endl;
     std::cout << "======================================================" << std::endl;
-    std::cout << "Problem dimension                   : " << PD << std::endl;
+    std::cout << "Problem dimension                   : " << problem_dimension << std::endl;
     std::cout << "Number of nodes                     : " << NoNs << std::endl;
     std::cout << "Number of bulk elements             : " << NoEs << std::endl;
     std::cout << "Number of DOFs                      : ";
@@ -246,7 +246,7 @@ void problemInfo(int PD,
         std::cout << dof << " ";
     }
     std::cout << std::endl;
-    std::cout << "Element order                       : [ "<< element_order << "\n";
+    std::cout << "element order                       : [ "<< element_order << "\n";
     std::cout << "======================================================" << std::endl;
 
     // Open the file and write the problem information
@@ -255,7 +255,7 @@ void problemInfo(int PD,
         file << "======================================================\n";
         file << "================  Problem information  ===============\n";
         file << "======================================================\n";
-        file << "Problem dimension                   : " << PD << "\n";
+        file << "Problem dimension                   : " << problem_dimension << "\n";
         file << "Number of nodes                     : " << NoNs << "\n";
         file << "Number of bulk elements             : " << NoEs << "\n";
         file << "Number of DOFs                      : ";
@@ -263,7 +263,7 @@ void problemInfo(int PD,
             file << dof << " ";
         }
         file << "\n";
-        std::cout << "Element order                       : [ "<< element_order << "\n";
+        std::cout << "element order                       : [ "<< element_order << "\n";
         file << "======================================================\n\n\n";
         file.close();  // Close the file
     } else {
@@ -273,20 +273,20 @@ void problemInfo(int PD,
 
 
 //---------------------------------Prescribe----------------------------------
-std::pair<std::vector<Node>, std::vector<Element>> prescribe(std::vector<Node>& NL, std::vector<Element>& EL, double LF) {
+std::pair<std::vector<node>, std::vector<element>> prescribe(std::vector<node>& NL, std::vector<element>& EL, double LF) {
     int NoEs = EL.size();
     int NoNs = NL.size();
     int NPE = EL[0].NPE;
-    int PD = NL[0].PD;
+    int problem_dimension = NL[0].problem_dimension;
 
     // Loop through all nodes to prescribe displacements
     for (int i = 0; i < NoNs; ++i) {
-        std::vector<int>& BC = NL[i].BC;
-        std::vector<double>& BCval = NL[i].BCval;
-        std::vector<double>& X = NL[i].X;
+        std::vector<int>& BC = NL[i].boundary_condition;
+        std::vector<double>& BCval = NL[i].boundary_condition_value;
+        std::vector<double>& X = NL[i].X_material_position;
         std::vector<double>& x = NL[i].x;
 
-        for (int p = 0; p < PD; ++p) {
+        for (int p = 0; p < problem_dimension; ++p) {
             if (BC[p] == 0) {
                 x[p] = X[p] + LF * BCval[p];
             }
@@ -297,11 +297,11 @@ std::pair<std::vector<Node>, std::vector<Element>> prescribe(std::vector<Node>& 
 
     // Loop through all elements to update spatial coordinates
     for (int e = 0; e < NoEs; ++e) {
-        Eigen::MatrixXd x(PD, NPE);
+        Eigen::MatrixXd x(problem_dimension, NPE);
         const std::vector<int>& NdL = EL[e].NdL;
 
         for (int i = 0; i < NPE; ++i) {
-            for (int p = 0; p < PD; ++p) {
+            for (int p = 0; p < problem_dimension; ++p) {
                 x(p, i) = NL[NdL[i]].x[p];
             }
         }
@@ -314,9 +314,9 @@ std::pair<std::vector<Node>, std::vector<Element>> prescribe(std::vector<Node>& 
 
 //---------------------------------Assemble-------------------------------------
 std::pair<Eigen::VectorXd, Eigen::SparseMatrix<double>> Assemble(
-        int PD,
-        const std::vector<Node>& NL,
-        const std::vector<Element>& EL,
+        int problem_dimension,
+        const std::vector<node>& NL,
+        const std::vector<element>& EL,
         int DOFs)
 {
     int NoEs = EL.size();
@@ -332,13 +332,13 @@ std::pair<Eigen::VectorXd, Eigen::SparseMatrix<double>> Assemble(
         auto [R, K] = EL[e].RK();
         const std::vector<int>& NdL = EL[e].NdL;
 
-        int dim = PD;
+        int dim = problem_dimension;
         int first = 0;
         int last = dim - 1;
 
         // Update Rtot
         for (int i = 0; i < NPE; ++i) {
-            const std::vector<int>& BC = NL[NdL[i]].BC;
+            const Eigen::VectorXd & BC = NL[NdL[i]].boundary_condition;
             const std::vector<int>& DOF = NL[NdL[i]].DOF;
 
             for (int p = first; p <= last; ++p) {
@@ -349,22 +349,22 @@ std::pair<Eigen::VectorXd, Eigen::SparseMatrix<double>> Assemble(
         }
 
         // Update Ktot using triplets for sparse storage
-        int dim_i = PD;
+        int dim_i = problem_dimension;
         int first_i = 0;
         int last_i = dim_i - 1;
 
         for (int i = 0; i < NPE; ++i) {
-            const std::vector<int>& BC_i = NL[NdL[i]].BC;
-            const std::vector<int>& DOF_i = NL[NdL[i]].DOF;
+            const Eigen::VectorXd & BC_i = NL[NdL[i]].boundary_condition;
+            const Eigen::VectorXd& DOF_i = NL[NdL[i]].DOF;
 
             for (int p = first_i; p <= last_i; ++p) {
                 if (BC_i[p] == 1) {
-                    int dim_j = PD;
+                    int dim_j = problem_dimension;
                     int first_j = 0;
                     int last_j = dim_j - 1;
 
                     for (int j = 0; j < NPE; ++j) {
-                        const std::vector<int>& BC_j = NL[NdL[j]].BC;
+                        const std::vector<int>& BC_j = NL[NdL[j]].boundary_condition;
                         const std::vector<int>& DOF_j = NL[NdL[j]].DOF;
 
                         for (int q = first_j; q <= last_j; ++q) {
@@ -390,15 +390,15 @@ std::pair<Eigen::VectorXd, Eigen::SparseMatrix<double>> Assemble(
 //----------------------------Assemble Gauss Points----------------------------------------
 // Function definition for Assemble_GP
 std::pair<Eigen::MatrixXd, Eigen::SparseMatrix<double>> Assemble_GP(
-        int PD,
-        const std::vector<Node>& NL,
-        const std::vector<Element>& EL,
+        int problem_dimension,
+        const std::vector<node>& NL,
+        const std::vector<element>& EL,
         int GP_DOFs)
 {
     int NoEs = EL.size();
     int NoNs = NL.size();
     int NPE = EL[0].NPE;
-    int NGP_val = NL[0].GP_BC.size(); // Number of Gauss point values
+    int NGP_val = NL[0].gauss_point_BC.size(); // Number of Gauss point values
 
     Eigen::MatrixXd Rtot_GP = Eigen::MatrixXd::Zero(GP_DOFs, NGP_val);
     std::vector<Eigen::Triplet<double>> tripletList;
@@ -412,7 +412,7 @@ std::pair<Eigen::MatrixXd, Eigen::SparseMatrix<double>> Assemble_GP(
         // Assemble Rtot_GP
         for (int s = 0; s < NGP_val; ++s) {
             for (int i = 0; i < NPE; ++i) {
-                const std::vector<int>& BC = NL[NdL[i]].GP_BC;
+                const std::vector<int>& BC = NL[NdL[i]].gauss_point_BC;
                 const std::vector<int>& DOF = NL[NdL[i]].GP_DOF;
                 int dim = 1;  // dim is 1 for Gauss point quantities
 
@@ -426,15 +426,15 @@ std::pair<Eigen::MatrixXd, Eigen::SparseMatrix<double>> Assemble_GP(
 
         // Assemble Ktot_GP using triplets for sparse storage
         for (int i = 0; i < NPE; ++i) {
-            const std::vector<int>& BC_i = NL[NdL[i]].GP_BC;
+            const std::vector<int>& BC_i = NL[NdL[i]].gauss_point_BC;
             const std::vector<int>& DOF_i = NL[NdL[i]].GP_DOF;
             int dim_i = 1;
 
             for (int p = 0; p < dim_i; ++p) {
                 if (BC_i[p] == 1) {
                     for (int j = 0; j < NPE; ++j) {
-                        const std::vector<int>& BC_j = NL[NdL[j]].GP_BC;
-                        const std::vector<int>& DOF_j = NL[NdL[j]].GP_DOF;
+                        const Eigen::VectorXdstd::vector<int>& BC_j = NL[NdL[j]].gauss_point_BC;
+                        const Eigen::VectorXd& DOF_j = NL[NdL[j]].GP_DOF;
                         int dim_j = 1;
 
                         for (int q = 0; q < dim_j; ++q) {
@@ -459,9 +459,9 @@ std::pair<Eigen::MatrixXd, Eigen::SparseMatrix<double>> Assemble_GP(
 
 // ----------------------------------Residual-----------------------------------
 std::vector<double> Residual(
-        int PD,
-        const std::vector<Node>& NL,
-        const std::vector<Element>& EL,
+        int problem_dimension,
+        const std::vector<node>& NL,
+        const std::vector<element>& EL,
         int DOFs,
         double dt)
 {
@@ -477,12 +477,12 @@ std::vector<double> Residual(
         std::vector<double>  R = EL[e].Residual();
         const std::vector<int>& NdL = EL[e].NdL;
 
-        int dim = PD; // Dimension based on the problem
+        int dim = problem_dimension; // Dimension based on the problem
         int first = 1;
         int last = dim;
 
         for (int i = 0; i < NPE; ++i) {
-            const std::vector<int>& BC = NL[NdL[i]].BC;
+            const std::vector<int>& BC = NL[NdL[i]].boundary_condition;
             const std::vector<int>& DOF = NL[NdL[i]].DOF;
 
             for (int p = first; p <= last; ++p) {
@@ -498,16 +498,16 @@ std::vector<double> Residual(
 
 
 //---------------------------------Update----------------------------------------------------------------
-void update(std::vector<Node>& NL, std::vector<Element>& EL, const std::vector<double>& dx) {
+void update(std::vector<node>& NL, std::vector<element>& EL, const std::vector<double>& dx) {
     int NoEs = EL.size();
     int NoNs = NL.size();
-    int PD = NL[0].PD;
+    int problem_dimension = NL[0].problem_dimension;
     int NPE = EL[1].NPE;
     // Update the nodes
     for (int i = 0; i < NoNs; i++) {
-        Node& node = NL[i];
-        for (size_t p = 0; p < node.BC.size(); p++) {
-            if (node.BC[p] == 1) {
+        node& node = NL[i];
+        for (size_t p = 0; p < node.boundary_condition.size(); p++) {
+            if (node.boundary_condition[p] == 1) {
                 node.x[p] += dx[node.DOF[p]];
             }
         }
@@ -516,8 +516,8 @@ void update(std::vector<Node>& NL, std::vector<Element>& EL, const std::vector<d
 
     // Update the elements
     for (int e = 0; e < NoEs; e++) {
-        Element& elem = EL[e];
-        elem.x.resize(PD, std::vector<double>(NPE));
+        element& elem = EL[e];
+        elem.x.resize(problem_dimension, std::vector<double>(NPE));
         for (int i = 0; i < NPE; i++) {
             int nodeIndex = elem.NdL[i];
             elem.x[i] = NL[nodeIndex].x;

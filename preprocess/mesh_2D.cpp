@@ -42,7 +42,7 @@ void Mesh_2D::generateIndividualMesh(int degree, NodeList_2D& nl, ElementList& e
     int num_nodes_per_dim = degree * partition + 1;  // Total nodes in each dimension
     int num_elements = partition * partition;        // Total elements
 
-    double dx = domain_size / (degree * partition);  // Node spacing
+    double dx = domain_size / (degree * partition);  // node spacing
 
     // Generate Nodes
     nl.resize(num_nodes_per_dim * num_nodes_per_dim, 2);
@@ -59,7 +59,7 @@ void Mesh_2D::generateIndividualMesh(int degree, NodeList_2D& nl, ElementList& e
     el.reserve(num_elements);
     for (int j = 0; j < partition; ++j) {
         for (int i = 0; i < partition; ++i) {
-            // Node indices (1-based indexing for MATLAB-style output)
+            // node indices (1-based indexing for MATLAB-style output)
             int n1 = j * num_nodes_per_dim + i + 1;       // Bottom-left
             int n2 = n1 + 1;             // Bottom-right
             int n4 = n1 + num_nodes_per_dim;                            // Top-left

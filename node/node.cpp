@@ -5,16 +5,18 @@
 #include "node.hpp"
 
 node::node(int node_number, int problem_dimension,  Eigen::VectorXd X_material_position,
-           Eigen::VectorXd x_spatial_position, Eigen::VectorXd element_list) {
+           Eigen::VectorXd x_spatial_position, std::vector<int> element_list) {
     this->node_number = node_number;
     this->problem_dimension = problem_dimension;
 
     // Resize member vectors and assign passed values
-    this->X_material_position.resize(problem_dimension);
+    this->X_material_position.resize(problem_dimension, problem_dimension);
     this->X_material_position = X_material_position;
 
-    this->x_spatial_position.resize(problem_dimension);
+    this->x_spatial_position.resize(problem_dimension, problem_dimension);
     this->x_spatial_position = x_spatial_position;
+
+    this->element_list=element_list;
 
     initialization(problem_dimension);
 

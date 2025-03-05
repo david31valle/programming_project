@@ -20,13 +20,13 @@
 class node {
 public:
     //Constructor
-    node(int node_number, int problem_dimension, Eigen::VectorXd X_material_position, Eigen::VectorXd x_spatial_configuration, Eigen::VectorXd element_list);
+    node(int node_number, int problem_dimension, Eigen::VectorXd X_material_position, Eigen::VectorXd x_spatial_configuration, std::vector<int> element_list);
 
     int problem_dimension;
     int node_number;
-    Eigen::VectorXd X_material_position;
-    Eigen::VectorXd x_spatial_position;
-    Eigen::VectorXd element_list;
+    Eigen::MatrixXd X_material_position;
+    Eigen::MatrixXd x_spatial_position;
+    std::vector<int> element_list;
     Eigen::VectorXd boundary_condition;
     Eigen::VectorXd boundary_condition_value;
     Eigen::VectorXd DOF;

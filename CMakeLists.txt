@@ -5,21 +5,19 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(programming_project
         main.cpp
         Eigen
-        node/node.hpp
-        node/node.cpp
         initialization/Initialize.hpp
-        element/element.hpp
-        element/element.cpp
         preprocess/mesh_1D.hpp
         preprocess/mesh_1D.cpp
         preprocess/mesh_2D.hpp
         preprocess/mesh_3D.hpp
         preprocess/mesh_2D.cpp
         preprocess/mesh_3D.cpp
-        utils/utils.hpp
-        utils/utils.cpp
-        Problem/Problem.cpp
-        Problem/problem.hpp)
+        preprocess/mesh.cpp
+        preprocess/mesh.hpp
+        initialization/Initialize.cpp
+        node/node.cpp
+
+)
 
 add_executable(testing
         tests.cpp
@@ -28,4 +26,5 @@ add_executable(testing
         element/element.hpp
         element/element.cpp
         Problem/Problem.cpp
-        Problem/problem.hpp)
+        Problem/problem.hpp
+)
