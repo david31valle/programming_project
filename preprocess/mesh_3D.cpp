@@ -11,7 +11,9 @@
 struct TupleHash {
     template <typename T1, typename T2, typename T3>
     std::size_t operator()(const std::tuple<T1, T2, T3>& t) const {
-        return std::hash<T1>()(std::get<0>(t)) ^ (std::hash<T2>()(std::get<1>(t)) << 1) ^ (std::hash<T3>()(std::get<2>(t)) << 2);
+        return std::hash<T1>()(std::get<0>(t))
+               ^ (std::hash<T2>()(std::get<1>(t)) << 1)
+               ^ (std::hash<T3>()(std::get<2>(t)) << 2);
     }
 };
 
@@ -39,13 +41,14 @@ void Mesh_3D::generateMesh() {
 
 // Generate nodes and elements for a given degree
 void Mesh_3D::generateIndividualMesh(int degree, NodeList_3D& nl, ElementList& el) const {
-    int num_nodes_per_dim = degree * partition + 1;  // Total nodes in each dimension
-    int num_elements = partition * partition * partition;  // Total elements
+    int num_nodes_per_dim = degree * partition + 1;  // Total nodes along each dimension
+    int num_nodes = num_nodes_per_dim * num_nodes_per_dim * num_nodes_per_dim;
+    int num_elements = partition * partition * partition;  // Total number of elements
 
-    double dx = domain_size / (degree * partition);  // node spacing
+    double dx = domain_size / (degree * partition);  // Node spacing
 
-    // Generate Nodes
-    nl.resize(num_nodes_per_dim * num_nodes_per_dim * num_nodes_per_dim, 3);
+    // Generate the node list as an Eigen matrix (each row: [x, y, z])
+    nl.resize(num_nodes, 3);
     int index = 0;
     for (int k = 0; k < num_nodes_per_dim; ++k) {
         for (int j = 0; j < num_nodes_per_dim; ++j) {
@@ -58,23 +61,31 @@ void Mesh_3D::generateIndividualMesh(int degree, NodeList_3D& nl, ElementList& e
         }
     }
 
-    // Generate Elements (linear degree case)
-    el.reserve(num_elements);
+    // Generate element connectivity for linear hexahedral elements (8 nodes per element)
+    el.resize(num_elements, 8);
+    int elem_idx = 0;
     for (int k = 0; k < partition; ++k) {
         for (int j = 0; j < partition; ++j) {
             for (int i = 0; i < partition; ++i) {
-                // node indices (1-based indexing for MATLAB-style output)
-                int n1 = k * num_nodes_per_dim * num_nodes_per_dim + j * num_nodes_per_dim + i + 1;  // Bottom-left-front
-                int n2 = n1 + 1;  // Bottom-right-front
-                int n4 = n1 + num_nodes_per_dim;  // Top-left-front
-                int n3 = n4 + 1;  // Top-right-front
-                int n5 = n1 + num_nodes_per_dim * num_nodes_per_dim;  // Bottom-left-back
-                int n6 = n2 + num_nodes_per_dim * num_nodes_per_dim;  // Bottom-right-back
-                int n8 = n4 + num_nodes_per_dim * num_nodes_per_dim;  // Top-left-back
-                int n7 = n3 + num_nodes_per_dim * num_nodes_per_dim;  // Top-right-back
+                // Using 1-based indexing for node numbering:
+                int n1 = k * num_nodes_per_dim * num_nodes_per_dim + j * num_nodes_per_dim + i + 1; // Bottom-left-front
+                int n2 = n1 + 1;                                                                    // Bottom-right-front
+                int n4 = n1 + num_nodes_per_dim;                                                    // Top-left-front
+                int n3 = n4 + 1;                                                                    // Top-right-front
+                int n5 = n1 + num_nodes_per_dim * num_nodes_per_dim;                                // Bottom-left-back
+                int n6 = n2 + num_nodes_per_dim * num_nodes_per_dim;                                // Bottom-right-back
+                int n8 = n4 + num_nodes_per_dim * num_nodes_per_dim;                                // Top-left-back
+                int n7 = n3 + num_nodes_per_dim * num_nodes_per_dim;                                // Top-right-back
 
-                // Store the element in the correct order
-                el.push_back({n1, n2, n3, n4, n5, n6, n7, n8});
+                el(elem_idx, 0) = n5;
+                el(elem_idx, 1) = n6;
+                el(elem_idx, 2) = n2;
+                el(elem_idx, 3) = n1;
+                el(elem_idx, 4) = n8;
+                el(elem_idx, 5) = n7;
+                el(elem_idx, 6) = n3;
+                el(elem_idx, 7) = n4;
+                ++elem_idx;
             }
         }
     }
@@ -104,15 +115,22 @@ void Mesh_3D::mergeNodeLists() {
 void Mesh_3D::updateElementLists() {
     std::unordered_map<std::tuple<double, double, double>, int, TupleHash> node_map;
     for (int i = 0; i < merged_node_list.rows(); ++i) {
-        node_map[{merged_node_list(i, 0), merged_node_list(i, 1), merged_node_list(i, 2)}] = i + 1; // 1-based index
+        node_map[{merged_node_list(i, 0), merged_node_list(i, 1), merged_node_list(i, 2)}] = i + 1; // 1-based indexing
     }
 
-    for (size_t i = 0; i < element_lists.size(); ++i) {
-        for (auto& element : element_lists[i]) {
-            for (auto& node : element) {
-                auto& nl = node_lists[i];
-                int row = (node - 1);
-                node = node_map[{nl(row, 0), nl(row, 1), nl(row, 2)}];
+    // For each element connectivity matrix (built as an Eigen matrix)
+    for (size_t k = 0; k < element_lists.size(); ++k) {
+        Eigen::MatrixXd &el = element_lists[k];
+        int rows = el.rows();
+        int cols = el.cols();
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                int old_index = static_cast<int>(el(i, j));
+                double x = node_lists[k](old_index - 1, 0);
+                double y = node_lists[k](old_index - 1, 1);
+                double z = node_lists[k](old_index - 1, 2);
+                int new_index = node_map[{x, y, z}];
+                el(i, j) = new_index;
             }
         }
     }
@@ -121,15 +139,9 @@ void Mesh_3D::updateElementLists() {
 // Print mesh (for debugging)
 void Mesh_3D::printMesh() const {
     std::cout << "Nodes (x, y, z):\n" << merged_node_list << "\n";
-
     for (size_t i = 0; i < element_lists.size(); ++i) {
         std::cout << "Elements (Order " << element_orders[i] << "):\n";
-        for (const auto& element : element_lists[i]) {
-            for (const auto& node : element) {
-                std::cout << node << " ";
-            }
-            std::cout << "\n";
-        }
+        std::cout << element_lists[i] << "\n";
     }
 }
 

@@ -10,7 +10,7 @@
 
 // Type aliases for clarity
 using NodeList_2D = Eigen::MatrixXd;
-using ElementList = std::vector<std::vector<int>>;
+using ElementList = Eigen::MatrixXd;
 
 // Mesh_2D class declaration
 class Mesh_2D {
