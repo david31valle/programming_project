@@ -7,9 +7,9 @@
 Eigen::MatrixXd element::gauss_points;
 Eigen::MatrixXd element::shape_functions_N;
 Eigen::MatrixXd element::gradient_N_xi;
-static std::vector<std::vector<double>> gauss_points_vector;
-static std::vector<std::vector<double>> shape_functions_N_vector;
-static std::vector<std::vector<double>> gradient_N_xi_vector;
+std::vector<std::vector<double>> element::gauss_points_vector;
+std::vector<std::vector<double>> element::shape_functions_N_vector;
+std::vector<std::vector<double>> element::gradient_N_xi_vector;
 
 
 element::element(int element_number, int problem_dimension,

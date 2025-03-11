@@ -24,15 +24,6 @@ add_executable(programming_project
         utils/utils.cpp
         Problem/problem.hpp
         Problem/problem.cpp
-        Problem/problem.cpp
+
 )
 
-add_executable(testing
-        tests.cpp
-        utils/utils.hpp
-        utils/utils.cpp
-        element/element.hpp
-        element/element.cpp
-        Problem/old_Problem.cpp
-        Problem/problem.hpp
-)

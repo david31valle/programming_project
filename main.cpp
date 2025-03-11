@@ -5,6 +5,7 @@
 #include "preprocess/mesh.hpp"
 #include "initialization/Initialize.hpp"
 #include "Problem/problem.hpp"
+#include "element/element.hpp"
 
 int main() {
     // Input parameters
@@ -20,7 +21,7 @@ int main() {
     int max_iteration = 10;                 // Maximum Newton-Raphson iterations
     double tol = 1e-10;                     // Tolerance for solver convergence
     std::string boundary_condition = "DBC"; // Boundary condition ("DBC", "PBC")
-    std::string gauss_points_values = "On"; // Output Gauss point values ("On"/"Off")
+    std::string gauss_points_values = "Off"; // Output Gauss point values ("On"/"Off")
 
     auto start = std::chrono::high_resolution_clock::now();
 
