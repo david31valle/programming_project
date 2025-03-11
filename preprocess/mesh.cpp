@@ -62,7 +62,7 @@ std::pair<Eigen::MatrixXd , Eigen::MatrixXd> generate_mesh(int domain_size, int 
             }
 
             case 3: {
-                std::cout << "Generating 3D Mesh...\n";
+                //std::cout << "Generating 3D Mesh...\n";
                 std::vector<int> element_orders = {element_order, element_order, element_order};
 
                 // Create and generate the 3D mesh (Assuming Mesh3D class exists)
@@ -91,7 +91,7 @@ std::pair<Eigen::MatrixXd , Eigen::MatrixXd> generate_mesh(int domain_size, int 
                 throw std::invalid_argument("Invalid problem dimension! Use 1 (1D), 2 (2D), or 3 (3D).");
         }
 
-        std::cout << "Mesh generation complete.\n";
+        //std::cout << "Mesh generation complete.\n";
         return generated_mesh;
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << '\n';

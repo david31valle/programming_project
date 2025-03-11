@@ -4,25 +4,74 @@
 #include <string>
 #include "../Eigen/Dense"
 #include "../Eigen/Sparse"
+#include "../Eigen/IterativeLinearSolvers"
 #include "../node/node.hpp"
-#include "../element/element.cpp"
+#include "../element/element.hpp"
+#include "iostream"
+#include <fstream>
+#include <algorithm>
+#include <vector>
+#include <numeric>
+
 
 using namespace Eigen;
-class Problem {
+class problem {
 public:
-    Problem(int PD, std::vector<node>& NL, std::vector<element>& EL,
-            double domain_size, const Eigen::MatrixXd& BC, const std::string& DEF,
-            const std::vector<int>& element_order, double d, int steps,
-            int max_iter, double tol, const std::string& GP_vals);
-            Eigen::MatrixXd m;
+    // Member variables
+    int problem_dimension;
+    std::vector<node> Node_List;
+    std::vector<element> Element_List;
+    std::string boundary_condition;
+    int domain_size;
+    std::string deformation_type;
+    int element_order;
+    double d;
+    int steps;
+    int max_iter;
+    double tol;
+    std::string gauss_points_values;
+    Eigen::MatrixXd F;
+    std::string filename;
+    double load_factor = 0;
+    Eigen::MatrixXd m;
+
+    // DOF variables
+    int DOFs=0;
+    int DOCs=0;
+    std::vector<int> CNL; // Constrained node list
+    std::vector<int> PNL; // Prescribed node list
+
+    Eigen::VectorXd Rtot;
+    Eigen::SparseMatrix<double> Ktot;
+    Eigen::SparseMatrix<double> Kpu;
+    Eigen::SparseMatrix<double> Kpp;
+
+    // Constructor
+    problem(int problem_dimension,
+            const std::vector<node>& Node_List,
+            const std::vector<element>& Element_List,
+            int domain_size,
+            const std::string& boundary_condition,
+            const std::string& deformation_type,
+            int element_order,
+            double d,
+            int steps,
+            int max_iter,
+            double tol,
+            const std::string& gauss_points_values);
+
 
 private:
-    Eigen::MatrixXd AssignBC(std::vector<node>& NL, double domain_size, const Eigen::MatrixXd& BC, const Eigen::MatrixXd& F);
-    std::pair<Eigen::MatrixXd, Eigen::MatrixXd> Assemble(int PD, std::vector<node>& NL, std::vector<element>& EL, int DOFs);
-    Eigen::MatrixXd Residual(int PD, std::vector<node>& NL, std::vector<element>& EL, int DOFs);
-    void update(std::vector<node>& NL, std::vector<element>& EL, const Eigen::VectorXd& dx);
-    void prescribe(std::vector<node>& NL, std::vector<element>& EL, double LF);
-    void PostProcess(int PD, const std::vector<node>& NL, const std::vector<element>& EL, int step);
+    void Assign_BC() ;
+    void Assign_DOF_DBC();
+    void initialize_F();
+    void Assign_GP_DOFs();
+    void problem_info();
+    void prescribe();
+    void assemble();
+    void update(const Eigen::VectorXd& dx);
+    void Residual(double dt);
+
 };
 
 #endif
