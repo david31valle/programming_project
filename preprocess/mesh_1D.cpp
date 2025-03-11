@@ -1,11 +1,8 @@
-//
-// Created by Maitreya Limkar on 17-02-2025.
-//
-
-#include "Mesh_1D.hpp"
+#include "mesh_1D.hpp"
 #include <iostream>
 #include <algorithm>
 #include <unordered_map>
+#include "../Eigen/Dense"
 
 // Constructor
 Mesh_1D::Mesh_1D(const double domain_size, const int partition, const std::vector<int>& element_orders)
@@ -15,7 +12,7 @@ Mesh_1D::Mesh_1D(const double domain_size, const int partition, const std::vecto
 void Mesh_1D::generateMesh() {
     for (const auto& degree : element_orders) {
         NodeList_1D nl;
-        ElementList el;
+        Eigen::MatrixXd el;  // Use an Eigen matrix directly for element connectivity
         generateIndividualMesh(degree, nl, el);
         node_lists.push_back(nl);
         element_lists.push_back(el);
@@ -30,28 +27,29 @@ void Mesh_1D::generateMesh() {
 }
 
 // Generate nodes and elements for a given degree
-void Mesh_1D::generateIndividualMesh(const int degree, NodeList_1D& nl, ElementList& el) const {
+void Mesh_1D::generateIndividualMesh(const int degree, NodeList_1D& nl, Eigen::MatrixXd& el) const {
     const int num_nodes = degree * partition + 1;
     const int num_elements = partition;
     const int nodes_per_element = degree + 1;
 
-    double dx = domain_size / (degree * partition);
+    // Generate node coordinates using Eigen’s LinSpaced
     nl = NodeList_1D::LinSpaced(num_nodes, 0.0, domain_size);
 
-    el.reserve(num_elements);
+    // Allocate the element connectivity matrix
+    el.resize(num_elements, nodes_per_element);
+
+    // Fill the connectivity matrix directly
     for (int i = 0; i < num_elements; ++i) {
-        std::vector<int> element(nodes_per_element);
         if (i == 0) {
             for (int j = 0; j < nodes_per_element; ++j) {
-                element[j] = j + 1;
+                el(i, j) = j + 1;
             }
         } else {
-            element[0] = el[i - 1].back();
+            el(i, 0) = el(i - 1, nodes_per_element - 1);  // Start with the last node of the previous element
             for (int j = 1; j < nodes_per_element; ++j) {
-                element[j] = element[j - 1] + 1;
+                el(i, j) = el(i, j - 1) + 1;
             }
         }
-        el.push_back(element);
     }
 }
 
@@ -76,10 +74,19 @@ void Mesh_1D::updateElementLists() {
         node_map[merged_node_list(i)] = i + 1;  // 1-based indexing
     }
 
-    for (auto& el : element_lists) {
-        for (auto& element : el) {
-            for (auto& node : element) {
-                node = node_map[node_lists[&el - &element_lists[0]](node - 1)];
+    // For each individual element list (now an Eigen matrix), update the connectivity
+    for (size_t k = 0; k < element_lists.size(); k++) {
+        Eigen::MatrixXd &el = element_lists[k];
+        int rows = el.rows();
+        int cols = el.cols();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                int old_index = static_cast<int>(el(i, j));
+                // Get the corresponding coordinate from the original node list for this element set
+                double coord = node_lists[k](old_index - 1);
+                // Update using the new global indexing
+                int new_index = node_map[coord];
+                el(i, j) = new_index;
             }
         }
     }
@@ -87,25 +94,19 @@ void Mesh_1D::updateElementLists() {
 
 // Print the mesh
 void Mesh_1D::printMesh() const {
-    std::cout << "Nodes (x):\n" << merged_node_list.transpose() << "\n\n";
+    std::cout << "Nodes (x):\n" << merged_node_list << "\n\n";
 
     for (size_t i = 0; i < element_lists.size(); ++i) {
         std::cout << "Element Connectivity (Order " << element_orders[i] << "):\n";
-        for (const auto& element : element_lists[i]) {
-            for (const auto& node : element) {
-                std::cout << node << " ";
-            }
-            std::cout << "\n";
-        }
-        std::cout << "\n";
+        std::cout << element_lists[i] << "\n\n";
     }
 }
 
 // Accessor Methods
-NodeList_1D Mesh_1D::getNodeList() const {
+Mesh_1D::NodeList_1D Mesh_1D::getNodeList() const {
     return merged_node_list;
 }
 
-std::vector<ElementList> Mesh_1D::getElementLists() const {
+std::vector<Eigen::MatrixXd> Mesh_1D::getElementLists() const {
     return element_lists;
 }
