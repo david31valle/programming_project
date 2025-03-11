@@ -5,13 +5,14 @@
 #include "Initialize.hpp"
 
 
-std::pair<Eigen::MatrixXd, Eigen::MatrixXd>
+std::pair<std::vector<node>, std::vector<element>>
 initialize(int problem_dimension, Eigen::MatrixXd &node_list, Eigen::MatrixXd &element_list, int domain_size,
-           int element_order, int lamda, int mu) {
+           int element_order, double lamda, double mu) {
     double tol = 1e-6;
     int NGP = 0;
     int number_of_nodes=node_list.rows();
     int number_of_elements=element_list.rows();
+    int nodes_per_elements=element_list.cols();
 
     switch (problem_dimension) {
         case 1:
@@ -46,9 +47,9 @@ initialize(int problem_dimension, Eigen::MatrixXd &node_list, Eigen::MatrixXd &e
             break;
     }
 
-    int rows=element_list.rows();
-    int cols=element_list.cols();
-    std::cout<<element_list;
+    int rows = element_list.rows();
+    int cols = element_list.cols();
+    //std::cout<<element_list;
     std::vector<node> Node_List;
 
     for (int i = 0; i < number_of_nodes; ++i) {
@@ -66,6 +67,26 @@ initialize(int problem_dimension, Eigen::MatrixXd &node_list, Eigen::MatrixXd &e
         Node_List.push_back(node(i, problem_dimension, X, X, element_indices));
     }
 
+    std::vector<element> Element_List;
+    for (int i = 0; i < nodes_per_elements; ++i) {
+        Eigen::MatrixXd X = Eigen::MatrixXd::Zero(problem_dimension, nodes_per_elements);  // Initialize (PD x NPE) matrix
 
-    return std::pair<Eigen::MatrixXd, Eigen::MatrixXd>();
+        Eigen::MatrixXd NdL = element_list.row(i);  // Extract node indices for element i
+
+        // Iterate over nodes in the element
+        for (int j = 0; j < nodes_per_elements; ++j) {
+            X.col(j) = Node_List[NdL(j)].X_material_position;  // Assign node coordinates (assuming NL[j].X is an Eigen::VectorXd)
+        }
+
+        Eigen::MatrixXd x = X;  // Equivalent to 'x = X' in MATLAB
+
+        // Create and store the element
+        Element_List.push_back(element(i, problem_dimension, NdL, X, x, NGP, element_order, lamda, mu));
+        ;
+    }
+
+    std::pair<std::vector<node>, std::vector<element>> node_and_element_list;
+    node_and_element_list.first=Node_List;
+    node_and_element_list.second=Element_List;
+    return node_and_element_list;
 }

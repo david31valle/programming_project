@@ -6,16 +6,16 @@
 #include <iostream>
 #include "../Eigen/Dense"
 #include "../node/node.hpp"
+#include "../element/element.hpp"
 
-std::pair<Eigen::MatrixXd,Eigen::MatrixXd> initialize(int problem_dimension,
+
+std::pair<std::vector<node>, std::vector<element>> initialize(int problem_dimension,
                                                       Eigen::MatrixXd& node_list,
                                                       Eigen::MatrixXd& element_list,
                                                       int domain_size,
                                                       int element_order,
-                                                      int lamda,
-                                                      int mu
+                                                      double lamda,
+                                                      double mu
 );
-
-
 
 #endif //PROGRAMMING_PROJECT_INITIALIZE_HPP
