@@ -48,8 +48,8 @@ void Mesh_2D::generateIndividualMesh(int degree, NodeList_2D& nl, ElementList& e
     int index = 0;
     for (int j = 0; j < num_nodes_per_dim; ++j) {
         for (int i = 0; i < num_nodes_per_dim; ++i) {
-            nl(index, 0) = i * dx;  // x-coordinate
-            nl(index, 1) = j * dx;  // y-coordinate
+            nl(index, 0) = j * dx;  // x-coordinate
+            nl(index, 1) = i * dx;  // y-coordinate
             ++index;
         }
     }
@@ -58,8 +58,8 @@ void Mesh_2D::generateIndividualMesh(int degree, NodeList_2D& nl, ElementList& e
     // For a linear quadrilateral, each element has 4 nodes.
     el.resize(num_elements, 4);
     int elem_idx = 0;
-    for (int j = 0; j < partition; ++j) {
-        for (int i = 0; i < partition; ++i) {
+    for (int i = 0; i < partition; ++i) {
+        for (int j = 0; j < partition; ++j) {
             // 1-based indexing assumed for node numbering:
             int n1 = j * num_nodes_per_dim + i + 1;       // Bottom-left
             int n2 = n1 + 1;                              // Bottom-right
@@ -67,9 +67,9 @@ void Mesh_2D::generateIndividualMesh(int degree, NodeList_2D& nl, ElementList& e
             int n3 = n4 + 1;                              // Top-right
 
             el(elem_idx, 0) = n1;
-            el(elem_idx, 1) = n2;
+            el(elem_idx, 1) = n4;
             el(elem_idx, 2) = n3;
-            el(elem_idx, 3) = n4;
+            el(elem_idx, 3) = n2;
             ++elem_idx;
         }
     }
@@ -89,8 +89,8 @@ void Mesh_2D::mergeNodeLists() {
 
     merged_node_list.resize(combined_nodes.size(), 2);
     for (size_t i = 0; i < combined_nodes.size(); ++i) {
-        merged_node_list(i, 0) = combined_nodes[i].first;
-        merged_node_list(i, 1) = combined_nodes[i].second;
+        merged_node_list(i, 1) = combined_nodes[i].first;
+        merged_node_list(i, 0) = combined_nodes[i].second;
     }
 }
 

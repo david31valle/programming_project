@@ -43,8 +43,12 @@ public:
 
     Eigen::VectorXd Rtot;
     Eigen::SparseMatrix<double> Ktot;
-    Eigen::SparseMatrix<double> Kpu;
-    Eigen::SparseMatrix<double> Kpp;
+    //Eigen::SparseMatrix<double> Kpu;
+    //Eigen::SparseMatrix<double> Kpp;
+
+    Eigen::MatrixXd Kuu;
+    Eigen::MatrixXd Kpu;
+    Eigen::MatrixXd Kpp;
 
     // Constructor
     problem(int problem_dimension,

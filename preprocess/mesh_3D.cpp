@@ -126,9 +126,9 @@ void Mesh_3D::updateElementLists() {
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
                 int old_index = static_cast<int>(el(i, j));
-                double x = node_lists[k](old_index - 1, 0);
+                double z = node_lists[k](old_index - 1, 0);
                 double y = node_lists[k](old_index - 1, 1);
-                double z = node_lists[k](old_index - 1, 2);
+                double x = node_lists[k](old_index - 1, 2);
                 int new_index = node_map[{x, y, z}];
                 el(i, j) = new_index;
             }
@@ -138,7 +138,7 @@ void Mesh_3D::updateElementLists() {
 
 // Print mesh (for debugging)
 void Mesh_3D::printMesh() const {
-    std::cout << "Nodes (x, y, z):\n" << merged_node_list << "\n";
+    //std::cout << "Nodes (x, y, z):\n" << merged_node_list << "\n";
     for (size_t i = 0; i < element_lists.size(); ++i) {
         std::cout << "Elements (Order " << element_orders[i] << "):\n";
         std::cout << element_lists[i] << "\n";

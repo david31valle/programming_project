@@ -12,11 +12,16 @@ problem::problem(int problem_dimension, const std::vector<node>& Node_List, cons
           element_order(element_order), d(d), steps(steps), max_iter(max_iter), tol(tol),
           gauss_points_values(gauss_points_values) {
 
-    filename = std::to_string(problem_dimension) + "D_Normal_" + std::to_string(Element_List[0].node_per_element.cols()) +  // Equivalent to `size(EL,2)` in MATLAB
+    filename = std::to_string(problem_dimension) + "D_Normal_" + std::to_string(Element_List[0].node_per_element) +  // Equivalent to `size(EL,2)` in MATLAB
                            "_EL=[" + std::to_string(element_order) + "]_.txt";
 
     initialize_F();
+    //std::cout<<"F"<<std::endl;
+    //std::cout<<F<<std::endl;
     Assign_BC();
+
+
+
     if(gauss_points_values=="On"){
         Assign_GP_DOFs();
     }
@@ -25,7 +30,7 @@ problem::problem(int problem_dimension, const std::vector<node>& Node_List, cons
 
     int counter = 1;
     double load_step=1/steps;
-    assemble();
+
     while (load_factor <= 1.0 + 1e-8) { // Load step iteration
         std::cout << "\nLoad factor: " << load_factor << std::endl;
 
@@ -49,10 +54,15 @@ problem::problem(int problem_dimension, const std::vector<node>& Node_List, cons
             }
 
             // Compute displacement increment and update nodal values
-            Eigen::SparseLU<Eigen::SparseMatrix<double>> solver;
-            solver.compute(Ktot);
-            Eigen::VectorXd dx = -solver.solve(Rtot);
+// Solve the linear system: dx = - Kuu \ Rtot
+            Eigen::VectorXd dx = - Kuu.colPivHouseholderQr().solve(Rtot);
+            std::cout<<"dx"<<std::endl;
+            std::cout<<dx <<std::endl;
+
+// Compute the reaction forces: f_reaction = Kpu * dx
             Eigen::VectorXd f_reaction = Kpu * dx;
+
+
             update(dx);
 
             // Recompute residual with updated values
@@ -80,11 +90,6 @@ problem::problem(int problem_dimension, const std::vector<node>& Node_List, cons
         load_factor += load_step;
         counter++;
 
-        /*if (gauss_points_values == "On") {
-            //assemble_GP(); // Assemble at Gauss points
-            Eigen::VectorXd dx_GP = Ktot_GP.colPivHouseholderQr().solve(Rtot_GP);
-            //update_GP(dx_GP);
-        }*/
     } // End
 
 
@@ -247,11 +252,12 @@ void problem::prescribe() {
 
     // Copy updated node positions to the element spatial configuration
     for (int e = 0; e < NoEs; ++e) {
-        int NPE = Element_List[e].node_per_element.cols();  // Nodes per element
+        int NPE = Element_List[e].node_per_element;  // Nodes per element
         Eigen::MatrixXd x(PD, NPE);  // Temporary matrix for element positions
 
-        Eigen::VectorXd NdL = Element_List[e].node_per_element.row(0).transpose();  // Extract node indices
-
+        auto test= Element_List[e].node_list;
+        Eigen::MatrixXd NdL = Element_List[e].node_list;
+        NdL.transposeInPlace(); // Convert 1×n matrix to n×1 vector
         for (int i = 0; i < NPE; ++i) {
             x.col(i) = Node_List[NdL(i)].x_spatial_position;  // Assign node positions
         }
@@ -264,114 +270,180 @@ void problem::prescribe() {
 void problem::assemble() {
     int NoEs = Element_List.size();  // Number of elements
     int NoNs = Node_List.size();     // Number of nodes
-    int PD = problem_dimension;      // Problem dimension
-
-    int DOFs_total = DOFs;           // Total degrees of freedom
+    int NPE = Element_List[0].node_per_element; // Nodes per element
 
     // Resize global force vector
-    Rtot = Eigen::VectorXd::Zero(DOFs_total);
+    Rtot = Eigen::VectorXd::Zero(DOFs);
 
     // Sparse matrix assembly lists
     std::vector<Eigen::Triplet<double>> tripletList;
 
     // Generate all node indices
-    std::vector<int> allIndices(NoNs * PD);
+    std::vector<int> allIndices(NoNs * problem_dimension);
     std::iota(allIndices.begin(), allIndices.end(), 0);  // Fill with 0 to NoNs*PD-1
+    std::transform(CNL.begin(), CNL.end(), CNL.begin(), [](int x) { return x - 1; });
 
     // Identify unknown indices (excluding constrained and prescribed nodes)
-    std::vector<int> unknown_indices;
-    std::set_difference(allIndices.begin(), allIndices.end(), CNL.begin(), CNL.end(),
-                        std::back_inserter(unknown_indices));
-    std::set_difference(unknown_indices.begin(), unknown_indices.end(), PNL.begin(), PNL.end(),
-                        std::back_inserter(unknown_indices));
+    std::vector<int> temp_indices;
+    std::set_difference(
+            allIndices.begin(), allIndices.end(),
+            CNL.begin(), CNL.end(),
+            std::back_inserter(temp_indices));
 
+// Now remove PNL from temp_indices to get final unknown_indices
+    std::transform(PNL.begin(), PNL.end(), PNL.begin(), [](int x) { return x - 1; });
+    std::vector<int> unknown_indices;
+    std::set_difference(
+            temp_indices.begin(), temp_indices.end(),
+            PNL.begin(), PNL.end(),
+            std::back_inserter(unknown_indices));
+
+    Eigen::MatrixXd Total_stiffness_matrix = Eigen::MatrixXd::Zero(NoNs*problem_dimension ,NoNs*problem_dimension );
     for (int e = 0; e < NoEs; ++e) {
         // Retrieve element stiffness matrix and residual vector
         Eigen::VectorXd R;
         Eigen::MatrixXd K;
-        std::tie(R, K) = Element_List[e].compute_RK();  // Calls residual and stiffness matrix
+        std::tie(R, K) = Element_List[e].compute_RK();
 
         // Get element node list
-        Eigen::VectorXi NdL = Element_List[e].node_per_element.row(0).transpose().cast<int>();
+        Eigen::MatrixXd NdL = Element_List[e].node_list;
+        NdL.transposeInPlace(); // Convert 1×n matrix to n×1 vector
 
         // === ASSEMBLE GLOBAL RESIDUAL FORCE VECTOR ===
-        for (int i = 0; i < NdL.size(); ++i) {
-            Eigen::VectorXd& BC = Node_List[NdL(i)].boundary_condition;
-            Eigen::VectorXd& DOF = Node_List[NdL(i)].DOF;
+        for (int i = 0; i < NPE; ++i) {
+            node &currentNode = Node_List[NdL(i)];
+            Eigen::VectorXd &BC = currentNode.boundary_condition;
+            Eigen::VectorXd &DOF = currentNode.DOF;
 
-            for (int p = 0; p < PD; ++p) {
-                if (BC(p) == 1) {
-                    int dofIndex = DOF(p);
-                    Rtot(dofIndex) += R((i * PD) + p);
+            for (int p = 0; p < problem_dimension; ++p) {
+                if (BC(p) == 1) { // Only sum if not constrained
+
+                    int dofIndex = DOF(p) - 1;
+                    Rtot(dofIndex) += R((i * problem_dimension) + p);
                 }
             }
         }
 
-        // === ASSEMBLE GLOBAL STIFFNESS MATRIX ===
-        for (int i = 0; i < NdL.size(); ++i) {
-            Eigen::VectorXd& DOF_i = Node_List[NdL(i)].global_index;
-            for (int p = 0; p < PD; ++p) {
-                for (int j = 0; j < NdL.size(); ++j) {
-                    Eigen::VectorXd& DOF_j = Node_List[NdL(j)].global_index;
-                    for (int q = 0; q < PD; ++q) {
-                        tripletList.emplace_back(DOF_i(p), DOF_j(q), K((i * PD) + p, (j * PD) + q));
+
+
+// === ASSEMBLE GLOBAL STIFFNESS MATRIX ===
+        for (int i = 0; i < NPE; ++i) {
+            Eigen::VectorXd &DOF_i = Node_List[NdL(i)].global_index;
+            //std::cout<<"Dof_i:"<< DOF_i<<std::endl;
+            for (int p = 0; p < problem_dimension; ++p) {
+                int row = DOF_i(p) - 1;  // Adjust for 0-based indexing
+
+                if (row < 0 || row >= DOFs) continue; // Skip invalid indices
+
+                for (int j = 0; j < NPE; ++j) {
+                    Eigen::VectorXd &DOF_j = Node_List[NdL(j)].global_index;
+                    for (int q = 0; q < problem_dimension; ++q) {
+                        int col = DOF_j(q) - 1;
+
+                        if (col < 0 || col >= DOFs) continue; // Skip invalid indices
+
+                        auto temp= K(((i) * problem_dimension) + p, ((j) * problem_dimension) + q);
+                        Total_stiffness_matrix(row, col) += K(((i) * problem_dimension) + p, ((j) * problem_dimension) + q);
                     }
                 }
             }
         }
     }
+    //std::cout << "Size of Total Stiffness Matrix: " << Total_stiffness_matrix.rows() << " x " << Total_stiffness_matrix.cols() << std::endl;
+    //std::cout<<Total_stiffness_matrix<<std::endl;
 
-// Build the sparse stiffness matrix using triplets
-    Eigen::SparseMatrix<double> Total_stiffness_matrix(DOFs_total, DOFs_total);
-    Total_stiffness_matrix.setFromTriplets(tripletList.begin(), tripletList.end());
+    // Assuming unknown_indices and PNL are vectors<int> with valid indices
+    int Kuu_size = unknown_indices.size();
+    int Kpu_rows = PNL.size();
+    int Kpu_cols = unknown_indices.size();
+    int Kpp_size = PNL.size();
 
-    // Extract submatrices correctly using block operations
-    Ktot = Total_stiffness_matrix.block(0, 0, unknown_indices.size(), unknown_indices.size());
-    Kpu = Total_stiffness_matrix.block(PNL[0], unknown_indices[0], PNL.size(), unknown_indices.size());
-    Kpp = Total_stiffness_matrix.block(PNL[0], PNL[0], PNL.size(), PNL.size());
+// Create the matrices
+    Kuu.resize(Kuu_size, Kuu_size);
+    Kpu.resize(Kpu_rows, Kpu_cols);
+    Kpp.resize(Kpp_size, Kpp_size);
+
+// Fill Kuu
+    for (int i = 0; i < Kuu_size; ++i) {
+        for (int j = 0; j < Kuu_size; ++j) {
+            Kuu(i, j) = Total_stiffness_matrix(unknown_indices[i], unknown_indices[j]);
+        }
+    }
+   // std::cout << "Kuu Matrix (Unknown indices):\n" << Kuu << std::endl;
+// Fill Kpu
+    for (int i = 0; i < Kpu_rows; ++i) {
+        for (int j = 0; j < Kpu_cols; ++j) {
+            Kpu(i, j) = Total_stiffness_matrix(PNL[i], unknown_indices[j]);
+        }
+    }
+
+// Fill Kpp (optional, as stated not needed immediately)
+    for (int i = 0; i < Kpp_size; ++i) {
+        for (int j = 0; j < Kpp_size; ++j) {
+            Kpp(i, j) = Total_stiffness_matrix(PNL[i], PNL[j]);
+        }
+    }
+
+// Optionally print these matrices to verify
+    //std::cout << "Kuu Matrix (Unknown indices):\n" << Kuu << std::endl;
+    //std::cout << "Kpu Matrix (Prescribed vs Unknown indices):\n" << Kpu << std::endl;
+// Kpp is not immediately needed
+// std::cout << "Kpp Matrix (Prescribed indices):\n" << Kpp << std::endl;
 }
 
 
+
 void problem::update(const Eigen::VectorXd& dx) {
-    int NoNs = Node_List.size();  // Number of nodes
-    int NoEs = Element_List.size(); // Number of elements
-    int PD = problem_dimension;   // Problem dimension
+    int NoNs = Node_List.size();      // Number of nodes
+    int NoEs = Element_List.size();     // Number of elements
+    int PD = problem_dimension;         // Problem dimension
 
     // === Update nodal positions ===
     for (int i = 0; i < NoNs; ++i) {
+        // Retrieve boundary condition, DOF numbering, and current spatial position of node i
         Eigen::VectorXd& BC = Node_List[i].boundary_condition;
         Eigen::VectorXd& DOF = Node_List[i].DOF;
         Eigen::VectorXd x = Node_List[i].x_spatial_position;
 
+        // Loop over each degree of freedom for this node
         for (int p = 0; p < BC.size(); ++p) {
-            if (BC(p) == 1) {
-                x(p) += dx(static_cast<int>(DOF(p)));
+            if (BC(p) == 1) { // Only update if the DOF is free
+                // Note: DOF is assumed to be 1-indexed, so subtract 1 for C++ indexing
+                x(p) += dx(static_cast<int>(DOF(p)) - 1);
             }
         }
-
-        Node_List[i].x_spatial_position = x;  // Store updated position
+        // Store the updated nodal position back in the node structure
+        Node_List[i].x_spatial_position = x;
     }
 
     // === Update element spatial coordinates ===
     for (int e = 0; e < NoEs; ++e) {
-        int NPE = Element_List[e].node_per_element.cols();  // Nodes per element
-        Eigen::MatrixXd x(PD, NPE);  // Temporary matrix for element positions
+        int NPE = Element_List[e].node_per_element;  // Nodes per element
+        Eigen::MatrixXd x(PD, NPE);  // Temporary matrix to store element nodal positions
 
-        Eigen::VectorXi NdL = Element_List[e].node_per_element.row(0).transpose().cast<int>();  // Extract node indices
+        // Extract node list for the current element
+        // (Assume that Element_List[e].node_list is a vector of indices; if it's a row vector,
+        // you may need to transpose it as done here)
+        Eigen::VectorXd NdL = Element_List[e].node_list;
+        NdL.transposeInPlace(); // Ensure NdL is an NPEx1 vector (each entry is the node index)
 
+        // For each node of the element, assign its updated position into the temporary matrix
         for (int i = 0; i < NPE; ++i) {
-            x.col(i) = Node_List[NdL(i)].x_spatial_position;  // Assign updated node positions
+            // Again, if NdL is 1-indexed (from MATLAB), subtract 1 to get proper C++ index
+            x.col(i) = Node_List[static_cast<int>(NdL(i)) - 1].x_spatial_position;
         }
 
-        Element_List[e].spatial_coordinate = x;  // Store updated spatial positions
+        // Store the assembled element coordinate matrix back into the element structure
+        Element_List[e].spatial_coordinate = x;
     }
 }
+
 
 void problem::Residual(double dt) {
     int NoEs = Element_List.size();  // Number of elements
     int NoNs = Node_List.size();     // Number of nodes
     int PD = problem_dimension;      // Problem dimension
-    int NPE = Element_List[0].node_per_element.cols();  // Nodes per element
+    int NPE = Element_List[0].node_per_element;  // Nodes per element
 
     // Initialize global residual vector
     Rtot = Eigen::VectorXd::Zero(DOFs);
@@ -381,7 +453,7 @@ void problem::Residual(double dt) {
         Eigen::VectorXd R_e = Element_List[e].Residual(dt);
 
         // Get the nodes of the element
-        Eigen::VectorXi NdL = Element_List[e].node_per_element.row(0).transpose().cast<int>();
+        Eigen::VectorXd NdL = Element_List[e].node_list;
 
         // Assemble global residual vector
         for (int i = 0; i < NPE; ++i) {

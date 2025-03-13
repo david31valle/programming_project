@@ -283,9 +283,9 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                         N_xi_gp[1][i] = -1.0 * (xi[i] - 1.0) * (xi[i] + 1.0);
                         N_xi_gp[2][i] = 0.5 * xi[i] * (xi[i] + 1.0);
 
-                        GradN_xi_gp[0][i] = 0.5 * (2 * xi[i] - 1.0);
+                        GradN_xi_gp[0][i] = 0.5 * (2.0 * xi[i] - 1.0);  // Fixed
                         GradN_xi_gp[1][i] = -2.0 * xi[i];
-                        GradN_xi_gp[2][i] = 0.5 * (2 * xi[i] + 1.0);
+                        GradN_xi_gp[2][i] = 0.5 * (2.0 * xi[i] + 1.0);  // Fixed
                     }
                     break;
 
@@ -294,23 +294,30 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                     GradN_xi_gp.resize(4, std::vector<double>(NGP));
 
                     for (int i = 0; i < NGP; ++i) {
-                        N_xi_gp[0][i] = -9.0 / 16.0 * (xi[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) * (xi[i] - 1.0);
-                        N_xi_gp[1][i] = 27.0 / 16.0 * (xi[i] + 1.0) * (xi[i] - 1.0 / 3.0) * (xi[i] - 1.0);
-                        N_xi_gp[2][i] = -27.0 / 16.0 * (xi[i] + 1.0) * (xi[i] + 1.0 / 3.0) * (xi[i] - 1.0);
-                        N_xi_gp[3][i] = 9.0 / 16.0 * (xi[i] + 1.0) * (xi[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0);
+                        N_xi_gp[0][i] = (-9.0 / 16.0) * (xi[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) * (xi[i] - 1.0);
+                        N_xi_gp[1][i] = (27.0 / 16.0) * (xi[i] + 1.0) * (xi[i] - 1.0 / 3.0) * (xi[i] - 1.0);
+                        N_xi_gp[2][i] = (-27.0 / 16.0) * (xi[i] + 1.0) * (xi[i] + 1.0 / 3.0) * (xi[i] - 1.0);
+                        N_xi_gp[3][i] = (9.0 / 16.0) * (xi[i] + 1.0) * (xi[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0);
 
-                        GradN_xi_gp[0][i] = -9.0 / 16.0 *
-                                            ((xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) + (xi[i] + 1.0 / 3.0) * (xi[i] - 1.0) +
+                        GradN_xi_gp[0][i] = (-9.0 / 16.0) *
+                                            ((xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) +
+                                             (xi[i] + 1.0 / 3.0) * (xi[i] - 1.0) +
                                              (xi[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0));
-                        GradN_xi_gp[1][i] = 27.0 / 16.0 *
-                                            ((xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) + (xi[i] + 1.0) * (xi[i] - 1.0) +
+
+                        GradN_xi_gp[1][i] = (27.0 / 16.0) *
+                                            ((xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) +
+                                             (xi[i] + 1.0) * (xi[i] - 1.0) +
                                              (xi[i] + 1.0) * (xi[i] - 1.0 / 3.0));
-                        GradN_xi_gp[2][i] = -27.0 / 16.0 *
-                                            ((xi[i] - 1.0) * (xi[i] + 1.0 / 3.0) + (xi[i] + 1.0) * (xi[i] - 1.0) +
+
+                        GradN_xi_gp[2][i] = (-27.0 / 16.0) *
+                                            ((xi[i] - 1.0) * (xi[i] + 1.0 / 3.0) +
+                                             (xi[i] + 1.0) * (xi[i] - 1.0) +
                                              (xi[i] + 1.0) * (xi[i] + 1.0 / 3.0));
-                        GradN_xi_gp[3][i] = 9.0 / 16.0 * ((xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) +
-                                                          (xi[i] + 1.0) * (xi[i] - 1.0 / 3.0) +
-                                                          (xi[i] + 1.0) * (xi[i] + 1.0 / 3.0));
+
+                        GradN_xi_gp[3][i] = (9.0 / 16.0) *
+                                            ((xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) +
+                                             (xi[i] + 1.0) * (xi[i] - 1.0 / 3.0) +
+                                             (xi[i] + 1.0) * (xi[i] + 1.0 / 3.0));
                     }
                     break;
 
@@ -320,22 +327,22 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
 
                     for (int i = 0; i < NGP; ++i) {
                         N_xi_gp[0][i] = (2.0 / 3.0) * (xi[i] + 0.5) * xi[i] * (xi[i] - 0.5) * (xi[i] - 1.0);
-                        N_xi_gp[1][i] = -(8.0 / 3.0) * (xi[i] + 1.0) * xi[i] * (xi[i] - 0.5) * (xi[i] - 1.0);
+                        N_xi_gp[1][i] = (-8.0 / 3.0) * (xi[i] + 1.0) * xi[i] * (xi[i] - 0.5) * (xi[i] - 1.0);
                         N_xi_gp[2][i] = 4.0 * (xi[i] + 1.0) * (xi[i] + 0.5) * (xi[i] - 0.5) * (xi[i] - 1.0);
-                        N_xi_gp[3][i] = -(8.0 / 3.0) * (xi[i] + 1.0) * (xi[i] + 0.5) * xi[i] * (xi[i] - 1.0);
+                        N_xi_gp[3][i] = (-8.0 / 3.0) * (xi[i] + 1.0) * (xi[i] + 0.5) * xi[i] * (xi[i] - 1.0);
                         N_xi_gp[4][i] = (2.0 / 3.0) * (xi[i] + 1.0) * (xi[i] + 0.5) * xi[i] * (xi[i] - 0.5);
 
                         GradN_xi_gp[0][i] =
-                                (8 * std::pow(xi[i], 3)) / 3.0 - 2 * std::pow(xi[i], 2) - xi[i] / 3.0 + 1.0 / 6.0;
+                                (8.0 * std::pow(xi[i], 3)) / 3.0 - 2.0 * std::pow(xi[i], 2) - xi[i] / 3.0 + 1.0 / 6.0;
                         GradN_xi_gp[1][i] =
-                                -(32 * std::pow(xi[i], 3)) / 3.0 + 4 * std::pow(xi[i], 2) + (16 * xi[i]) / 3.0 -
+                                (-32.0 * std::pow(xi[i], 3)) / 3.0 + 4.0 * std::pow(xi[i], 2) + (16.0 * xi[i]) / 3.0 -
                                 4.0 / 3.0;
-                        GradN_xi_gp[2][i] = 16 * std::pow(xi[i], 3) - 10 * xi[i];
+                        GradN_xi_gp[2][i] = 16.0 * std::pow(xi[i], 3) - 10.0 * xi[i];
                         GradN_xi_gp[3][i] =
-                                -(32 * std::pow(xi[i], 3)) / 3.0 - 4 * std::pow(xi[i], 2) + (16 * xi[i]) / 3.0 +
+                                (-32.0 * std::pow(xi[i], 3)) / 3.0 - 4.0 * std::pow(xi[i], 2) + (16.0 * xi[i]) / 3.0 +
                                 4.0 / 3.0;
                         GradN_xi_gp[4][i] =
-                                (8 * std::pow(xi[i], 3)) / 3.0 + 2 * std::pow(xi[i], 2) - xi[i] / 3.0 - 1.0 / 6.0;
+                                (8.0 * std::pow(xi[i], 3)) / 3.0 + 2.0 * std::pow(xi[i], 2) - xi[i] / 3.0 - 1.0 / 6.0;
                     }
                     break;
             }
@@ -372,7 +379,6 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                     GradN_eta_gp.resize(9, std::vector<double>(NGP));
 
                     for (int i = 0; i < NGP; ++i) {
-
                         N_xi_gp[0][i] = 0.25 * (1.0 - xi[i]) * xi[i] * (1.0 - eta[i]) * eta[i];
                         N_xi_gp[1][i] = -0.25 * (1.0 + xi[i]) * xi[i] * (1.0 - eta[i]) * eta[i];
                         N_xi_gp[2][i] = 0.25 * (1.0 + xi[i]) * xi[i] * (1.0 + eta[i]) * eta[i];
@@ -383,23 +389,23 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                         N_xi_gp[7][i] = -0.5 * (1.0 - xi[i]) * xi[i] * (1.0 + eta[i]) * (1.0 - eta[i]);
                         N_xi_gp[8][i] = (1.0 - xi[i]) * (1.0 + xi[i]) * (1.0 + eta[i]) * (1.0 - eta[i]);
 
-                        GradN_xi_gp[0][i] = 0.25 * (1.0 - 2 * xi[i]) * (1.0 - eta[i]) * eta[i];
-                        GradN_xi_gp[1][i] = -0.25 * (1.0 + 2 * xi[i]) * (1.0 - eta[i]) * eta[i];
-                        GradN_xi_gp[2][i] = 0.25 * (1.0 + 2 * xi[i]) * (1.0 + eta[i]) * eta[i];
-                        GradN_xi_gp[3][i] = -0.25 * (1.0 - 2 * xi[i]) * (1.0 + eta[i]) * eta[i];
+                        GradN_xi_gp[0][i] = 0.25 * (1.0 - 2.0 * xi[i]) * (1.0 - eta[i]) * eta[i]; // Fixed
+                        GradN_xi_gp[1][i] = -0.25 * (1.0 + 2.0 * xi[i]) * (1.0 - eta[i]) * eta[i]; // Fixed
+                        GradN_xi_gp[2][i] = 0.25 * (1.0 + 2.0 * xi[i]) * (1.0 + eta[i]) * eta[i]; // Fixed
+                        GradN_xi_gp[3][i] = -0.25 * (1.0 - 2.0 * xi[i]) * (1.0 + eta[i]) * eta[i]; // Fixed
                         GradN_xi_gp[4][i] = xi[i] * eta[i] * (1.0 - eta[i]);
-                        GradN_xi_gp[5][i] = 0.50 * (1.0 + 2 * xi[i]) * (1.0 - eta[i]) * (1.0 + eta[i]);
+                        GradN_xi_gp[5][i] = 0.50 * (1.0 + 2.0 * xi[i]) * (1.0 - eta[i]) * (1.0 + eta[i]); // Fixed
                         GradN_xi_gp[6][i] = -xi[i] * eta[i] * (1.0 + eta[i]);
-                        GradN_xi_gp[7][i] = -0.50 * (1.0 - 2 * xi[i]) * (1.0 - eta[i]) * (1.0 + eta[i]);
+                        GradN_xi_gp[7][i] = -0.50 * (1.0 - 2.0 * xi[i]) * (1.0 - eta[i]) * (1.0 + eta[i]); // Fixed
                         GradN_xi_gp[8][i] = -2.00 * xi[i] * (1.0 - eta[i]) * (1.0 + eta[i]);
 
-                        GradN_eta_gp[0][i] = 0.25 * (1.0 - xi[i]) * xi[i] * (1.0 - 2 * eta[i]);
-                        GradN_eta_gp[1][i] = -0.25 * (1.0 + xi[i]) * xi[i] * (1.0 - 2 * eta[i]);
-                        GradN_eta_gp[2][i] = 0.25 * (1.0 + xi[i]) * xi[i] * (1.0 + 2 * eta[i]);
-                        GradN_eta_gp[3][i] = -0.25 * (1.0 - xi[i]) * xi[i] * (1.0 + 2 * eta[i]);
-                        GradN_eta_gp[4][i] = 0.50 * (1.0 - xi[i]) * (1.0 + xi[i]) * (2 * eta[i] - 1.0);
+                        GradN_eta_gp[0][i] = 0.25 * (1.0 - xi[i]) * xi[i] * (1.0 - 2.0 * eta[i]); // Fixed
+                        GradN_eta_gp[1][i] = -0.25 * (1.0 + xi[i]) * xi[i] * (1.0 - 2.0 * eta[i]); // Fixed
+                        GradN_eta_gp[2][i] = 0.25 * (1.0 + xi[i]) * xi[i] * (1.0 + 2.0 * eta[i]); // Fixed
+                        GradN_eta_gp[3][i] = -0.25 * (1.0 - xi[i]) * xi[i] * (1.0 + 2.0 * eta[i]); // Fixed
+                        GradN_eta_gp[4][i] = 0.50 * (1.0 - xi[i]) * (1.0 + xi[i]) * (2.0 * eta[i] - 1.0); // Fixed
                         GradN_eta_gp[5][i] = -(1.0 + xi[i]) * xi[i] * eta[i];
-                        GradN_eta_gp[6][i] = 0.50 * (1.0 - xi[i]) * (1.0 + xi[i]) * (1.0 + 2 * eta[i]);
+                        GradN_eta_gp[6][i] = 0.50 * (1.0 - xi[i]) * (1.0 + xi[i]) * (1.0 + 2.0 * eta[i]); // Fixed
                         GradN_eta_gp[7][i] = (1.0 - xi[i]) * xi[i] * (eta[i]);
                         GradN_eta_gp[8][i] = -2.00 * (1.0 - xi[i]) * (1.0 + xi[i]) * (eta[i]);
                     }
@@ -412,139 +418,202 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
 
                     for (int i = 0; i < NGP; ++i) {
 
-                        N_xi_gp[0][i] = (((9.0 * eta[i]) / 16.0) + (3.0 / 16.0)) * ((9 * xi[i]) / 16.0 + 3.0 / 16.0) *
+                        N_xi_gp[0][i] = (((9.0 * eta[i]) / 16.0) + (3.0 / 16.0)) * ((9.0 * xi[i]) / 16.0 + 3.0 / 16.0) *
                                         (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0);
-                        N_xi_gp[1][i] = -((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
+                        N_xi_gp[1][i] = -((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 9.0 / 16.0) *
                                         (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) *
                                         (xi[i] + 1.0 / 3.0);
-                        N_xi_gp[2][i] = ((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
+                        N_xi_gp[2][i] = ((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 9.0 / 16.0) *
                                         (eta[i] - 1.0 / 3.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) *
                                         (xi[i] + 1.0 / 3.0);
-                        N_xi_gp[3][i] = -((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9 * xi[i]) / 16.0 + 3.0 / 16.0) *
+                        N_xi_gp[3][i] = -((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 3.0 / 16.0) *
                                         (eta[i] - 1.0 / 3.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) *
                                         (xi[i] - 1.0 / 3.0);
-                        N_xi_gp[4][i] = -((9 * eta[i]) / 16.0 + 3.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                        N_xi_gp[4][i] = -((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
                                         (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0);
-                        N_xi_gp[5][i] = ((9 * eta[i]) / 16.0 + 3.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                        N_xi_gp[5][i] = ((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
                                         (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] + 1.0 / 3.0);
-                        N_xi_gp[6][i] = ((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
+                        N_xi_gp[6][i] = ((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 9.0 / 16.0) *
                                         (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) *
                                         (xi[i] + 1.0 / 3.0);
-                        N_xi_gp[7][i] = -((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
+                        N_xi_gp[7][i] = -((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 9.0 / 16.0) *
                                         (eta[i] - 1.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) *
                                         (xi[i] + 1.0 / 3.0);
-                        N_xi_gp[8][i] = -((9 * eta[i]) / 16.0 + 9.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                        N_xi_gp[8][i] = -((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
                                         (eta[i] - 1.0 / 3.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) *
                                         (xi[i] + 1.0 / 3.0);
-                        N_xi_gp[9][i] = ((9 * eta[i]) / 16.0 + 9.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                        N_xi_gp[9][i] = ((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
                                         (eta[i] - 1.0 / 3.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) *
                                         (xi[i] - 1.0 / 3.0);
-                        N_xi_gp[10][i] = ((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9 * xi[i]) / 16.0 + 3.0 / 16.0) *
+                        N_xi_gp[10][i] = ((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 3.0 / 16.0) *
                                          (eta[i] - 1.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0);
-                        N_xi_gp[11][i] = -((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9 * xi[i]) / 16.0 + 3.0 / 16.0) *
+                        N_xi_gp[11][i] = -((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 3.0 / 16.0) *
                                          (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0);
-                        N_xi_gp[12][i] = ((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
-                                         (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0);
-                        N_xi_gp[13][i] = -((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
-                                         (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] + 1.0 / 3.0);
-                        N_xi_gp[14][i] = ((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
-                                         (eta[i] - 1.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] + 1.0 / 3.0);
-                        N_xi_gp[15][i] = -((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
-                                         (eta[i] - 1.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0);
+                        N_xi_gp[11][i] =
+                                ((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                                (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0);
+                        N_xi_gp[12][i] =
+                                -((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                                (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] + 1.0 / 3.0);
+                        N_xi_gp[13][i] =
+                                ((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                                (eta[i] - 1.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] + 1.0 / 3.0);
+                        N_xi_gp[14][i] =
+                                -((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                                (eta[i] - 1.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0);
 
-                        GradN_xi_gp[0][i] = ((-27 * std::pow(xi[i], 2) + 18 * xi[i] + 1.0) *
-                                             (-9 * std::pow(eta[i], 3) + 9 * std::pow(eta[i], 2) + eta[i] - 1.0)) /
+                        N_xi_gp[15][i] =
+                                -((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                                (eta[i] - 1.0) * (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0);
+
+                        GradN_xi_gp[0][i] = ((-27.0 * std::pow(xi[i], 2.0) + 18.0 * xi[i] + 3.0) *
+                                             (-9.0 * std::pow(eta[i], 3.0) + 9.0 * std::pow(eta[i], 2.0) + eta[i] -
+                                              1.0)) / 256.0;
+
+                        GradN_xi_gp[1][i] = ((27.0 * std::pow(xi[i], 2) + 18.0 * xi[i] - 1.0) *
+                                             (-9.0 * std::pow(eta[i], 3) + 9.0 * std::pow(eta[i], 2) + eta[i] - 1.0)) /
                                             256.0;
-                        GradN_xi_gp[1][i] = ((27 * std::pow(xi[i], 2) + 18 * xi[i] - 1.0) *
-                                             (-9 * std::pow(eta[i], 3) + 9 * std::pow(eta[i], 2) + eta[i] - 1.0)) /
+
+                        GradN_xi_gp[2][i] = -((27.0 * std::pow(xi[i], 2) + 18.0 * xi[i] - 1.0) *
+                                              (-9.0 * std::pow(eta[i], 3) - 9.0 * std::pow(eta[i], 2) + eta[i] + 1.0)) /
                                             256.0;
-                        GradN_xi_gp[2][i] = -((27 * std::pow(xi[i], 2) + 18 * xi[i] - 1.0) *
-                                              (-9 * std::pow(eta[i], 3) - 9 * std::pow(eta[i], 2) + eta[i] + 1.0)) /
+
+                        GradN_xi_gp[3][i] = -((-27.0 * std::pow(xi[i], 2) + 18.0 * xi[i] + 1.0) *
+                                              (-9.0 * std::pow(eta[i], 3) - 9.0 * std::pow(eta[i], 2) + eta[i] + 1.0)) /
                                             256.0;
-                        GradN_xi_gp[3][i] = -((-27 * std::pow(xi[i], 2) + 18 * xi[i] + 1.0) *
-                                              (-9 * std::pow(eta[i], 3) - 9 * std::pow(eta[i], 2) + eta[i] + 1.0)) /
+
+                        GradN_xi_gp[4][i] = -(9.0 * (-9.0 * std::pow(xi[i], 2) + 2.0 * xi[i] + 3.0) *
+                                              (-9.0 * std::pow(eta[i], 3) + 9.0 * std::pow(eta[i], 2) + eta[i] - 1.0)) /
                                             256.0;
-                        GradN_xi_gp[4][i] = -(9 * (-9 * std::pow(xi[i], 2) + 2 * xi[i] + 3.0) *
-                                              (-9 * std::pow(eta[i], 3) + 9 * std::pow(eta[i], 2) + eta[i] - 1.0)) /
+
+                        GradN_xi_gp[5][i] = -(9.0 * (9.0 * std::pow(xi[i], 2) - 2.0 * xi[i] - 3.0) *
+                                              (-9.0 * std::pow(eta[i], 3) + 9.0 * std::pow(eta[i], 2) + eta[i] - 1.0)) /
                                             256.0;
-                        GradN_xi_gp[5][i] = -(9 * (9 * std::pow(xi[i], 2) + 2 * xi[i] - 3.0) *
-                                              (-9 * std::pow(eta[i], 3) + 9 * std::pow(eta[i], 2) + eta[i] - 1.0)) /
+
+                        GradN_xi_gp[6][i] = -(9.0 * (27.0 * std::pow(xi[i], 2) + 18.0 * xi[i] - 1.0) *
+                                              (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) *
+                                              (xi[i] + 1.0 / 3.0));
+
+                        GradN_xi_gp[7][i] = (9.0 * (27.0 * std::pow(xi[i], 2) + 18.0 * xi[i] - 1.0) *
+                                             (-3.0 * std::pow(eta[i], 3) - std::pow(eta[i], 2) - eta[i] + 1.0)) / 256.0;
+
+                        GradN_xi_gp[8][i] = (9.0 * (-9.0 * std::pow(xi[i], 2) + 2.0 * xi[i] + 3.0) *
+                                             (-9.0 * std::pow(eta[i], 3) - 9.0 * std::pow(eta[i], 2) + eta[i] + 1.0)) /
                                             256.0;
-                        GradN_xi_gp[6][i] = -(9 * (27 * std::pow(xi[i], 2) + 18 * xi[i] - 1.0) *
-                                              (-3 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 3 * eta[i] - 1.0)) /
+
+                        GradN_xi_gp[9][i] = (9.0 * (-9.0 * std::pow(xi[i], 2) + 2.0 * xi[i] + 3.0) *
+                                             (-9.0 * std::pow(eta[i], 3) - 9.0 * std::pow(eta[i], 2) + eta[i] + 1.0)) /
                                             256.0;
-                        GradN_xi_gp[7][i] = (9 * (27 * std::pow(xi[i], 2) + 18 * xi[i] - 1.0) *
-                                             (-3 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 3 * eta[i] + 1.0)) /
-                                            256.0;
-                        GradN_xi_gp[8][i] = (9 * (9 * std::pow(xi[i], 2) + 2 * xi[i] - 3.0) *
-                                             (-9 * std::pow(eta[i], 3) - 9 * std::pow(eta[i], 2) + eta[i] + 1.0)) /
-                                            256.0;
-                        GradN_xi_gp[9][i] = (9 * (-9 * std::pow(xi[i], 2) + 2 * xi[i] + 3.0) *
-                                             (-9 * std::pow(eta[i], 3) - 9 * std::pow(eta[i], 2) + eta[i] + 1.0)) /
-                                            256.0;
-                        GradN_xi_gp[10][i] = (9 * (-27 * std::pow(xi[i], 2) + 18 * xi[i] + 1.0) *
-                                              (-3 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 3 * eta[i] + 1.0)) /
-                                             256.0;
-                        GradN_xi_gp[11][i] = -(9 * (-27 * std::pow(xi[i], 2) + 18 * xi[i] + 1.0) *
-                                               (-3 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 3 * eta[i] - 1.0)) /
-                                             256.0;
-                        GradN_xi_gp[12][i] = (81 * (-9 * std::pow(xi[i], 2) + 2 * xi[i] + 3.0) *
-                                              (-3 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 3 * eta[i] - 1.0)) /
-                                             256.0;
-                        GradN_xi_gp[13][i] = (81 * (9 * std::pow(xi[i], 2) + 2 * xi[i] - 3.0) *
-                                              (-3 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 3 * eta[i] - 1.0)) /
-                                             256.0;
-                        GradN_xi_gp[14][i] = -(81 * (9 * std::pow(xi[i], 2) + 2 * xi[i] - 3.0) *
-                                               (-3 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 3 * eta[i] + 1.0)) /
-                                             256.0;
-                        GradN_xi_gp[15][i] = -(81 * (-9 * std::pow(xi[i], 2) + 2 * xi[i] + 3.0) *
-                                               (-3 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 3 * eta[i] + 1.0)) /
+
+                        GradN_xi_gp[10][i] = (9.0 * (-27.0 * std::pow(xi[i], 2) + 18.0 * xi[i] + 1.0) *
+                                              (-3.0 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 3.0 * eta[i] + 1.0)) /
                                              256.0;
 
-                        GradN_eta_gp[0][i] = ((-27 * std::pow(eta[i], 2) + 18 * eta[i] + 1.0) *
-                                              (-9 * std::pow(xi[i], 3) + 9 * std::pow(xi[i], 2) + xi[i] - 1.0)) / 256.0;
-                        GradN_eta_gp[1][i] = -((-27 * std::pow(eta[i], 2) + 18 * eta[i] + 1.0) *
-                                               (-9 * std::pow(xi[i], 3) - 9 * std::pow(xi[i], 2) + xi[i] + 1.0)) /
+                        GradN_xi_gp[11][i] = -(9.0 * (-27.0 * std::pow(xi[i], 2) + 18.0 * xi[i] + 1.0) *
+                                               (-3.0 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 3.0 * eta[i] -
+                                                1.0)) / 256.0;
+
+                        GradN_xi_gp[12][i] = (81.0 * (-9.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] + 3.0) *
+                                              (-3.0 * std::pow(eta[i], 3.0) + std::pow(eta[i], 2.0) + 3.0 * eta[i] -
+                                               1.0)) /
                                              256.0;
-                        GradN_eta_gp[2][i] = -((27 * std::pow(eta[i], 2) + 18 * eta[i] - 1.0) *
-                                               (-9 * std::pow(xi[i], 3) - 9 * std::pow(xi[i], 2) + xi[i] + 1.0)) /
+
+                        GradN_xi_gp[13][i] = (81.0 * (9.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] - 3.0) *
+                                              (-3.0 * std::pow(eta[i], 3.0) + std::pow(eta[i], 2.0) + 3.0 * eta[i] -
+                                               1.0)) /
                                              256.0;
-                        GradN_eta_gp[3][i] = ((27 * std::pow(eta[i], 2) + 18 * eta[i] - 1.0) *
-                                              (-9 * std::pow(xi[i], 3) + 9 * std::pow(xi[i], 2) + xi[i] - 1.0)) / 256.0;
-                        GradN_eta_gp[4][i] = -(9 * (-27 * std::pow(eta[i], 2) + 18 * eta[i] + 1.0) *
-                                               (-3 * std::pow(xi[i], 3) + std::pow(xi[i], 2) + 3 * xi[i] - 1.0)) /
+
+                        GradN_xi_gp[14][i] = -(81.0 * (9.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] - 3.0) *
+                                               (-3.0 * std::pow(eta[i], 3.0) - std::pow(eta[i], 2.0) + 3.0 * eta[i] +
+                                                1.0)) /
                                              256.0;
-                        GradN_eta_gp[5][i] = (9 * (-27 * std::pow(eta[i], 2) + 18 * eta[i] + 1.0) *
-                                              (-3 * std::pow(xi[i], 3) - std::pow(xi[i], 2) + 3 * xi[i] + 1.0)) / 256.0;
-                        GradN_eta_gp[6][i] = (9 * (-9 * std::pow(eta[i], 2) + 2 * eta[i] + 3.0) *
-                                              (-9 * std::pow(xi[i], 3) - 9 * std::pow(xi[i], 2) + xi[i] + 1.0)) / 256.0;
-                        GradN_eta_gp[7][i] = (9 * (9 * std::pow(eta[i], 2) + 2 * eta[i] - 3.0) *
-                                              (-9 * std::pow(xi[i], 3) - 9 * std::pow(xi[i], 2) + xi[i] + 1.0)) / 256.0;
-                        GradN_eta_gp[8][i] = (9 * (27 * std::pow(eta[i], 2) + 18 * eta[i] - 1.0) *
-                                              (-3 * std::pow(xi[i], 3) - std::pow(xi[i], 2) + 3 * xi[i] + 1.0)) / 256.0;
-                        GradN_eta_gp[9][i] = -(9 * (27 * std::pow(eta[i], 2) + 18 * eta[i] - 1.0) *
-                                               (-3 * std::pow(xi[i], 3) + std::pow(xi[i], 2) + 3 * xi[i] - 1.0)) /
+
+                        GradN_xi_gp[15][i] = -(81.0 * (-9.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] + 3.0) *
+                                               (-3.0 * std::pow(eta[i], 3.0) - std::pow(eta[i], 2.0) + 3.0 * eta[i] +
+                                                1.0)) /
                                              256.0;
-                        GradN_eta_gp[10][i] = -(9 * (9 * std::pow(eta[i], 2) + 2 * eta[i] - 3.0) *
-                                                (-9 * std::pow(xi[i], 3) + 9 * std::pow(xi[i], 2) + xi[i] - 1.0)) /
+
+                        GradN_eta_gp[0][i] = ((-27.0 * std::pow(eta[i], 2.0) + 18.0 * eta[i] + 1.0) *
+                                              (-9.0 * std::pow(xi[i], 3.0) + 9.0 * std::pow(xi[i], 2.0) + xi[i] -
+                                               1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[1][i] = -((-27.0 * std::pow(eta[i], 2.0) + 18.0 * eta[i] + 1.0) *
+                                               (-9.0 * std::pow(xi[i], 3.0) - 9.0 * std::pow(xi[i], 2.0) + xi[i] +
+                                                1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[2][i] = -((27.0 * std::pow(eta[i], 2.0) + 18.0 * eta[i] - 1.0) *
+                                               (-9.0 * std::pow(xi[i], 3.0) - 9.0 * std::pow(xi[i], 2.0) + xi[i] +
+                                                1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[3][i] = ((27.0 * std::pow(eta[i], 2.0) + 18.0 * eta[i] - 1.0) *
+                                              (-9.0 * std::pow(xi[i], 3.0) + 9.0 * std::pow(xi[i], 2.0) + xi[i] -
+                                               1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[4][i] = -(9.0 * (-27.0 * std::pow(eta[i], 2.0) + 18.0 * eta[i] + 1.0) *
+                                               (-3.0 * std::pow(xi[i], 3.0) + std::pow(xi[i], 2.0) + 3.0 * xi[i] -
+                                                1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[5][i] = (9.0 * (-27.0 * std::pow(eta[i], 2.0) + 18.0 * eta[i] + 1.0) *
+                                              (-3.0 * std::pow(xi[i], 3.0) - std::pow(xi[i], 2.0) + 3.0 * xi[i] +
+                                               1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[6][i] = (9.0 * (-9.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] + 3.0) *
+                                              (-9.0 * std::pow(xi[i], 3.0) - 9.0 * std::pow(xi[i], 2.0) + xi[i] +
+                                               1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[7][i] = (9.0 * (9.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] - 3.0) *
+                                              (-9.0 * std::pow(xi[i], 3.0) - 9.0 * std::pow(xi[i], 2.0) + xi[i] +
+                                               1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[8][i] = (9.0 * (27.0 * std::pow(eta[i], 2.0) + 18.0 * eta[i] - 1.0) *
+                                              (-3.0 * std::pow(xi[i], 3.0) - std::pow(xi[i], 2.0) + 3.0 * xi[i] +
+                                               1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[9][i] = -(9.0 * (27.0 * std::pow(eta[i], 2.0) + 18.0 * eta[i] - 1.0) *
+                                               (-3.0 * std::pow(xi[i], 3.0) + std::pow(xi[i], 2.0) + 3.0 * xi[i] -
+                                                1.0)) /
+                                             256.0;
+
+                        GradN_eta_gp[10][i] = -(9.0 * (9.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] - 3.0) *
+                                                (-9.0 * std::pow(xi[i], 3.0) + 9.0 * std::pow(xi[i], 2.0) + xi[i] -
+                                                 1.0)) /
                                               256.0;
-                        GradN_eta_gp[11][i] = -(9 * (-9 * std::pow(eta[i], 2) + 2 * eta[i] + 3.0) *
-                                                (-9 * std::pow(xi[i], 3) + 9 * std::pow(xi[i], 2) + xi[i] - 1.0)) /
+
+                        GradN_eta_gp[11][i] = -(9.0 * (-9.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] + 3.0) *
+                                                (-9.0 * std::pow(xi[i], 3.0) + 9.0 * std::pow(xi[i], 2.0) + xi[i] -
+                                                 1.0)) /
                                               256.0;
-                        GradN_eta_gp[12][i] = (81 * (-9 * std::pow(eta[i], 2) + 2 * eta[i] + 3.0) *
-                                               (-3 * std::pow(xi[i], 3) + std::pow(xi[i], 2) + 3 * xi[i] - 1.0)) /
+
+                        GradN_eta_gp[12][i] = (81.0 * (-9.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] + 3.0) *
+                                               (-3.0 * std::pow(xi[i], 3.0) + std::pow(xi[i], 2.0) + 3.0 * xi[i] -
+                                                1.0)) /
                                               256.0;
-                        GradN_eta_gp[13][i] = -(81 * (-9 * std::pow(eta[i], 2) + 2 * eta[i] + 3.0) *
-                                                (-3 * std::pow(xi[i], 3) - std::pow(xi[i], 2) + 3 * xi[i] + 1.0)) /
+
+                        GradN_eta_gp[13][i] = -(81.0 * (-9.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] + 3.0) *
+                                                (-3.0 * std::pow(xi[i], 3.0) - std::pow(xi[i], 2.0) + 3.0 * xi[i] +
+                                                 1.0)) /
                                               256.0;
-                        GradN_eta_gp[14][i] = -(81 * (9 * std::pow(eta[i], 2) + 2 * eta[i] - 3.0) *
-                                                (-3 * std::pow(xi[i], 3) - std::pow(xi[i], 2) + 3 * xi[i] + 1.0)) /
+
+                        GradN_eta_gp[14][i] = -(81.0 * (9.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] - 3.0) *
+                                                (-3.0 * std::pow(xi[i], 3.0) - std::pow(xi[i], 2.0) + 3.0 * xi[i] +
+                                                 1.0)) /
                                               256.0;
-                        GradN_eta_gp[15][i] = (81 * (9 * std::pow(eta[i], 2) + 2 * eta[i] - 3.0) *
-                                               (-3 * std::pow(xi[i], 3) + std::pow(xi[i], 2) + 3 * xi[i] - 1.0)) /
+
+                        GradN_eta_gp[15][i] = (81.0 * (9.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] - 3.0) *
+                                               (-3.0 * std::pow(xi[i], 3.0) + std::pow(xi[i], 2.0) + 3.0 * xi[i] -
+                                                1.0)) /
                                               256.0;
                     }
-                    break;
+                        break;
 
                 case 4:
                     N_xi_gp.resize(25, std::vector<double>(NGP)); // Assuming N has 16 rows, adjust as necessary
@@ -608,146 +677,205 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                                          (1.0 + eta[i]) * (0.5 + eta[i]) * (0.5 - eta[i]) * (1.0 - eta[i]);
 
                         GradN_xi_gp[0][i] =
-                                (eta[i] * (-4 * std::pow(eta[i], 3) + 4 * std::pow(eta[i], 2) + eta[i] - 1.0) *
-                                 (-16 * std::pow(xi[i], 3) + 12 * std::pow(xi[i], 2) + 2 * xi[i] - 1.0)) / 36.0;
-                        GradN_xi_gp[1][i] =
-                                (eta[i] * (-4 * std::pow(eta[i], 3) + 4 * std::pow(eta[i], 2) + eta[i] - 1.0) *
-                                 (-16 * std::pow(xi[i], 3) - 12 * std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) / 36.0;
-                        GradN_xi_gp[2][i] =
-                                (eta[i] * (-4 * std::pow(eta[i], 3) - 4 * std::pow(eta[i], 2) + eta[i] + 1.0) *
-                                 (-16 * std::pow(xi[i], 3) - 12 * std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) / 36.0;
-                        GradN_xi_gp[3][i] =
-                                (eta[i] * (-4 * std::pow(eta[i], 3) - 4 * std::pow(eta[i], 2) + eta[i] + 1.0) *
-                                 (-16 * std::pow(xi[i], 3) + 12 * std::pow(xi[i], 2) + 2 * xi[i] - 1.0)) / 36.0;
-                        GradN_xi_gp[4][i] =
-                                -(2 * eta[i] * (-4 * std::pow(eta[i], 3) + 4 * std::pow(eta[i], 2) + eta[i] - 1.0) *
-                                  (-8 * std::pow(xi[i], 3) + 3 * std::pow(xi[i], 2) + 4 * xi[i] - 1.0)) / 9;
-                        GradN_xi_gp[5][i] = -(eta[i] * xi[i] * (8 * std::pow(xi[i], 2) - 5) *
-                                              (-4 * std::pow(eta[i], 3) + 4 * std::pow(eta[i], 2) + eta[i] - 1.0)) / 3;
-                        GradN_xi_gp[6][i] =
-                                -(2 * eta[i] * (-4 * std::pow(eta[i], 3) + 4 * std::pow(eta[i], 2) + eta[i] - 1.0) *
-                                  (-8 * std::pow(xi[i], 3) - 3 * std::pow(xi[i], 2) + 4 * xi[i] + 1.0)) / 9;
-                        GradN_xi_gp[7][i] =
-                                -(2 * eta[i] * (-2 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 2 * eta[i] - 1.0) *
-                                  (-16 * std::pow(xi[i], 3) - 12 * std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) / 9;
-                        GradN_xi_gp[8][i] = -((4 * std::pow(eta[i], 4) - 5 * std::pow(eta[i], 2) + 1.0) *
-                                              (-16 * std::pow(xi[i], 3) - 12 * std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) /
-                                            6;
-                        GradN_xi_gp[9][i] =
-                                -(2 * eta[i] * (-2 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 2 * eta[i] + 1.0) *
-                                  (-16 * std::pow(xi[i], 3) - 12 * std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) / 9;
-                        GradN_xi_gp[10][i] =
-                                -(2 * eta[i] * (-4 * std::pow(eta[i], 3) - 4 * std::pow(eta[i], 2) + eta[i] + 1.0) *
-                                  (-8 * std::pow(xi[i], 3) - 3 * std::pow(xi[i], 2) + 4 * xi[i] + 1.0)) / 9;
-                        GradN_xi_gp[11][i] = -(eta[i] * xi[i] * (8 * std::pow(xi[i], 2) - 5) *
-                                               (-4 * std::pow(eta[i], 3) - 4 * std::pow(eta[i], 2) + eta[i] + 1.0)) / 3;
-                        GradN_xi_gp[12][i] =
-                                -(2 * eta[i] * (-4 * std::pow(eta[i], 3) - 4 * std::pow(eta[i], 2) + eta[i] + 1.0) *
-                                  (-8 * std::pow(xi[i], 3) + 3 * std::pow(xi[i], 2) + 4 * xi[i] - 1.0)) / 9;
-                        GradN_xi_gp[13][i] =
-                                -(2 * eta[i] * (-2 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 2 * eta[i] + 1.0) *
-                                  (-16 * std::pow(xi[i], 3) + 12 * std::pow(xi[i], 2) + 2 * xi[i] - 1.0)) / 9;
-                        GradN_xi_gp[14][i] = -((4 * std::pow(eta[i], 4) - 5 * std::pow(eta[i], 2) + 1.0) *
-                                               (-16 * std::pow(xi[i], 3) + 12 * std::pow(xi[i], 2) + 2 * xi[i] - 1.0)) /
-                                             6;
-                        GradN_xi_gp[15][i] =
-                                -(2 * eta[i] * (-2 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 2 * eta[i] - 1.0) *
-                                  (-16 * std::pow(xi[i], 3) + 12 * std::pow(xi[i], 2) + 2 * xi[i] - 1.0)) / 9;
-                        GradN_xi_gp[16][i] =
-                                (16 * eta[i] * (-2 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 2 * eta[i] - 1.0) *
-                                 (-8 * std::pow(xi[i], 3) + 3 * std::pow(xi[i], 2) + 4 * xi[i] - 1.0)) / 9;
-                        GradN_xi_gp[17][i] = (8 * eta[i] * xi[i] * (8 * std::pow(xi[i], 2) - 5) *
-                                              (-2 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 2 * eta[i] - 1.0)) / 3;
-                        GradN_xi_gp[18][i] =
-                                (16 * eta[i] * (-2 * std::pow(eta[i], 3) + std::pow(eta[i], 2) + 2 * eta[i] - 1.0) *
-                                 (-8 * std::pow(xi[i], 3) - 3 * std::pow(xi[i], 2) + 4 * xi[i] + 1.0)) / 9;
-                        GradN_xi_gp[19][i] = (4 * (4 * std::pow(eta[i], 4) - 5 * std::pow(eta[i], 2) + 1.0) *
-                                              (-8 * std::pow(xi[i], 3) - 3 * std::pow(xi[i], 2) + 4 * xi[i] + 1.0)) / 3;
-                        GradN_xi_gp[20][i] =
-                                (16 * eta[i] * (-2 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 2 * eta[i] + 1.0) *
-                                 (-8 * std::pow(xi[i], 3) - 3 * std::pow(xi[i], 2) + 4 * xi[i] + 1.0)) / 9;
-                        GradN_xi_gp[21][i] = (8 * eta[i] * xi[i] * (8 * std::pow(xi[i], 2) - 5) *
-                                              (-2 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 2 * eta[i] + 1.0)) / 3;
-                        GradN_xi_gp[22][i] =
-                                (16 * eta[i] * (-2 * std::pow(eta[i], 3) - std::pow(eta[i], 2) + 2 * eta[i] + 1.0) *
-                                 (-8 * std::pow(xi[i], 3) + 3 * std::pow(xi[i], 2) + 4 * xi[i] - 1.0)) / 9;
-                        GradN_xi_gp[23][i] = (4 * (4 * std::pow(eta[i], 4) - 5 * std::pow(eta[i], 2) + 1.0) *
-                                              (-8 * std::pow(xi[i], 3) + 3 * std::pow(xi[i], 2) + 4 * xi[i] - 1.0)) / 3;
-                        GradN_xi_gp[24][i] = 2 * xi[i] * (8 * std::pow(xi[i], 2) - 5) *
-                                             (4 * std::pow(eta[i], 4) - 5 * std::pow(eta[i], 2) + 1.0);
+                                (eta[i] * (-4.0 * std::pow(eta[i], 3.0) + 4.0 * std::pow(eta[i], 2.0) + eta[i] - 1.0) *
+                                 (-16.0 * std::pow(xi[i], 3.0) + 12.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] - 1.0)) / 36.0;
 
-                        GradN_eta_gp[0][i] = (xi[i] * (-4 * std::pow(xi[i], 3) + 4 * std::pow(xi[i], 2) + xi[i] - 1.0) *
-                                              (-16 * std::pow(eta[i], 3) + 12 * std::pow(eta[i], 2) + 2 * eta[i] -
-                                               1.0)) / 36.0;
-                        GradN_eta_gp[1][i] = (xi[i] * (-4 * std::pow(xi[i], 3) - 4 * std::pow(xi[i], 2) + xi[i] + 1.0) *
-                                              (-16 * std::pow(eta[i], 3) + 12 * std::pow(eta[i], 2) + 2 * eta[i] -
-                                               1.0)) / 36.0;
-                        GradN_eta_gp[2][i] = (xi[i] * (-4 * std::pow(xi[i], 3) - 4 * std::pow(xi[i], 2) + xi[i] + 1.0) *
-                                              (-16 * std::pow(eta[i], 3) - 12 * std::pow(eta[i], 2) + 2 * eta[i] +
-                                               1.0)) / 36.0;
-                        GradN_eta_gp[3][i] = (xi[i] * (-4 * std::pow(xi[i], 3) + 4 * std::pow(xi[i], 2) + xi[i] - 1.0) *
-                                              (-16 * std::pow(eta[i], 3) - 12 * std::pow(eta[i], 2) + 2 * eta[i] +
-                                               1.0)) / 36.0;
+                        GradN_xi_gp[1][i] =
+                                (eta[i] * (-4.0 * std::pow(eta[i], 3.0) + 4.0 * std::pow(eta[i], 2.0) + eta[i] - 1.0) *
+                                 (-16.0 * std::pow(xi[i], 3.0) - 12.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] + 1.0)) / 36.0;
+
+                        GradN_xi_gp[2][i] =
+                                (eta[i] * (-4.0 * std::pow(eta[i], 3.0) - 4.0 * std::pow(eta[i], 2.0) + eta[i] + 1.0) *
+                                 (-16.0 * std::pow(xi[i], 3.0) - 12.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] + 1.0)) / 36.0;
+
+                        GradN_xi_gp[3][i] =
+                                (eta[i] * (-4.0 * std::pow(eta[i], 3.0) - 4.0 * std::pow(eta[i], 2.0) + eta[i] + 1.0) *
+                                 (-16.0 * std::pow(xi[i], 3.0) + 12.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] - 1.0)) / 36.0;
+
+                        GradN_xi_gp[4][i] =
+                                -(2.0 * eta[i] * (-4.0 * std::pow(eta[i], 3.0) + 4.0 * std::pow(eta[i], 2.0) + eta[i] - 1.0) *
+                                  (-8.0 * std::pow(xi[i], 3.0) + 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] - 1.0)) / 9.0;
+
+                        GradN_xi_gp[5][i] =
+                                -(eta[i] * xi[i] * (8.0 * std::pow(xi[i], 2.0) - 5.0) *
+                                  (-4.0 * std::pow(eta[i], 3.0) + 4.0 * std::pow(eta[i], 2.0) + eta[i] - 1.0)) / 3.0;
+
+                        GradN_xi_gp[6][i] =
+                                -(2.0 * eta[i] * (-4.0 * std::pow(eta[i], 3.0) + 4.0 * std::pow(eta[i], 2.0) + eta[i] - 1.0) *
+                                  (-8.0 * std::pow(xi[i], 3.0) + 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] + 1.0)) / 9.0;
+
+                        GradN_xi_gp[7][i] =
+                                -(2.0 * eta[i] * (-2.0 * std::pow(eta[i], 3.0) + std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0) *
+                                  (-16.0 * std::pow(xi[i], 3.0) - 12.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] + 1.0)) / 9.0;
+
+                        GradN_xi_gp[8][i] =
+                                -( ( -16.0 * std::pow(xi[i], 3.0) - 12.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] + 1.0 ) *
+                                   ( -4.0 * std::pow(eta[i], 3.0) - 4.0 * std::pow(eta[i], 2.0) + eta[i] + 1.0 ) ) / 6.0;
+
+                        GradN_xi_gp[9][i] =
+                                -(2.0 * eta[i] * (-4.0 * std::pow(eta[i], 3.0) - 4.0 * std::pow(eta[i], 2.0) + eta[i] + 1.0) *
+                                  (-8.0 * std::pow(xi[i], 3.0) + 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] + 1.0)) / 9.0;
+
+                        GradN_xi_gp[10][i] =
+                                -(2.0 * eta[i] * (-4.0 * std::pow(eta[i], 3.0) - 4.0 * std::pow(eta[i], 2.0) + eta[i] + 1.0) *
+                                  (-8.0 * std::pow(xi[i], 3.0) + 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] - 1.0)) / 9.0;
+
+                        GradN_xi_gp[11][i] =
+                                -(eta[i] * xi[i] * (8.0 * std::pow(xi[i], 2.0) - 5.0) *
+                                  (-4.0 * std::pow(eta[i], 3.0) - 4.0 * std::pow(eta[i], 2.0) + eta[i] + 1.0)) / 3.0;
+
+                        GradN_xi_gp[12][i] =
+                                -(2.0 * eta[i] * (-4.0 * std::pow(eta[i], 3.0) - 4.0 * std::pow(eta[i], 2.0) + eta[i] + 1.0) *
+                                  (-8.0 * std::pow(xi[i], 3.0) + 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] - 1.0)) / 9.0;
+
+                        GradN_xi_gp[13][i] =
+                                -(2.0 * eta[i] * (-2.0 * std::pow(eta[i], 3.0) + std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0) *
+                                  (-16.0 * std::pow(xi[i], 3.0) + 12.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] - 1.0)) / 9.0;
+
+                        GradN_xi_gp[14][i] =
+                                -((4.0 * std::pow(eta[i], 4.0) - 5.0 * std::pow(eta[i], 2.0) + 1.0) *
+                                  (-16.0 * std::pow(xi[i], 3.0) + 12.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] - 1.0)) / 6.0;
+
+                        GradN_xi_gp[15][i] =
+                                -(2.0 * eta[i] * (-2.0 * std::pow(eta[i], 3.0) + std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0) *
+                                  (-16.0 * std::pow(xi[i], 3.0) + 12.0 * std::pow(xi[i], 2.0) + 2.0 * xi[i] - 1.0)) / 9.0;
+
+                        GradN_xi_gp[16][i] =
+                                (16.0 * eta[i] * (-2.0 * std::pow(eta[i], 3.0) + std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0) *
+                                 (-8.0 * std::pow(xi[i], 3.0) + 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] - 1.0)) / 9.0;
+
+                        GradN_xi_gp[17][i] =
+                                (8.0 * eta[i] * xi[i] * (8.0 * std::pow(xi[i], 2.0) - 5.0) *
+                                 (-2.0 * std::pow(eta[i], 3.0) + std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0)) / 3.0;
+
+                        GradN_xi_gp[18][i] =
+                                (16.0 * eta[i] * (-2.0 * std::pow(eta[i], 3.0) + std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0) *
+                                 (-8.0 * std::pow(xi[i], 3.0) - 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] + 1.0)) / 9.0;
+
+                        GradN_xi_gp[19][i] =
+                                (4.0 * (4.0 * std::pow(eta[i], 4.0) - 5.0 * std::pow(eta[i], 2.0) + 1.0) *
+                                 (-8.0 * std::pow(xi[i], 3.0) - 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] + 1.0)) / 6.0;
+
+                        GradN_xi_gp[20][i] =
+                                (16.0 * eta[i] * (-2.0 * std::pow(eta[i], 3.0) - std::pow(eta[i], 2.0) + 2.0 * eta[i] + 1.0) *
+                                 (-8.0 * std::pow(xi[i], 3.0) - 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] + 1.0)) / 9.0;
+
+                        GradN_xi_gp[21][i] =
+                                (8.0 * eta[i] * xi[i] * (8.0 * std::pow(xi[i], 2.0) - 5.0) *
+                                 (-2.0 * std::pow(eta[i], 3.0) - std::pow(eta[i], 2.0) + 2.0 * eta[i] + 1.0)) / 3.0;
+
+                        GradN_xi_gp[22][i] =
+                                (16.0 * eta[i] * (-2.0 * std::pow(eta[i], 3.0) - std::pow(eta[i], 2.0) + 2.0 * eta[i] + 1.0) *
+                                 (-8.0 * std::pow(xi[i], 3.0) + 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] - 1.0)) / 9.0;
+
+                        GradN_xi_gp[23][i] =
+                                (4.0 * (4.0 * std::pow(eta[i], 4.0) - 5.0 * std::pow(eta[i], 2.0) + 1.0) *
+                                 (-8.0 * std::pow(xi[i], 3.0) + 3.0 * std::pow(xi[i], 2.0) + 4.0 * xi[i] - 1.0)) / 9.0;
+
+                        GradN_xi_gp[24][i] =
+                                2.0 * xi[i] * (8.0 * std::pow(xi[i], 2.0) - 5.0) *
+                                (4.0 * std::pow(eta[i], 4.0) - 5.0 * std::pow(eta[i], 2.0) + 1.0);
+
+                        GradN_eta_gp[0][i] =
+                                (xi[i] * (-4.0 * std::pow(xi[i], 3.0) + 4.0 * std::pow(xi[i], 2.0) + xi[i] - 1.0) *
+                                 (-16.0 * std::pow(eta[i], 3.0) + 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0)) / 36.0;
+
+                        GradN_eta_gp[1][i] =
+                                (xi[i] * (-4.0 * std::pow(xi[i], 3.0) - 4.0 * std::pow(xi[i], 2.0) + xi[i] + 1.0) *
+                                 (-16.0 * std::pow(eta[i], 3.0) + 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0)) / 36.0;
+
+                        GradN_eta_gp[2][i] =
+                                (xi[i] * (-4.0 * std::pow(xi[i], 3.0) - 4.0 * std::pow(xi[i], 2.0) + xi[i] + 1.0) *
+                                 (-16.0 * std::pow(eta[i], 3.0) - 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] + 1.0)) / 36.0;
+
+                        GradN_eta_gp[3][i] =
+                                (xi[i] * (-4.0 * std::pow(xi[i], 3.0) + 4.0 * std::pow(xi[i], 2.0) + xi[i] - 1.0) *
+                                 (-16.0 * std::pow(eta[i], 3.0) - 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] + 1.0)) / 36.0;
+
                         GradN_eta_gp[4][i] =
-                                -(2 * xi[i] * (-2 * std::pow(xi[i], 3) + std::pow(xi[i], 2) + 2 * xi[i] - 1.0) *
-                                  (-16 * std::pow(eta[i], 3) + 12 * std::pow(eta[i], 2) + 2 * eta[i] - 1.0)) / 9;
-                        GradN_eta_gp[5][i] = -((4 * std::pow(xi[i], 4) - 5 * std::pow(xi[i], 2) + 1.0) *
-                                               (-16 * std::pow(eta[i], 3) + 12 * std::pow(eta[i], 2) + 2 * eta[i] -
-                                                1.0)) / 6;
-                        GradN_eta_gp[6][i] = -(2 * xi[i] *
-                                               (-16 * std::pow(eta[i], 3) + 12 * std::pow(eta[i], 2) + 2 * eta[i] -
-                                                1.0) *
-                                               (-2 * std::pow(xi[i], 3) - std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) / 9;
+                                -(2.0 * xi[i] * (-4.0 * std::pow(xi[i], 3.0) + std::pow(xi[i], 2.0) + 3.0 * xi[i] - 1.0) *
+                                  (-16.0 * std::pow(eta[i], 3.0) + 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0)) / 9.0;
+
+                        GradN_eta_gp[5][i] =
+                                -((4.0 * std::pow(xi[i], 4.0) - 5.0 * std::pow(xi[i], 2.0) + 1.0) *
+                                  (-16.0 * std::pow(eta[i], 3.0) + 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0)) / 6.0;
+
+                        GradN_eta_gp[6][i] =
+                                -(2.0 * xi[i] * (-16.0 * std::pow(eta[i], 3.0) + 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] - 1.0) *
+                                  (-2.0 * std::pow(xi[i], 3.0) - std::pow(xi[i], 2.0) + 2.0 * xi[i] + 1.0)) / 9.0;
+
                         GradN_eta_gp[7][i] =
-                                -(2 * xi[i] * (-4 * std::pow(xi[i], 3) - 4 * std::pow(xi[i], 2) + xi[i] + 1.0) *
-                                  (-8 * std::pow(eta[i], 3) + 3 * std::pow(eta[i], 2) + 4 * eta[i] - 1.0)) / 9;
-                        GradN_eta_gp[8][i] = -(eta[i] * xi[i] * (8 * std::pow(eta[i], 2) - 5) *
-                                               (-4 * std::pow(xi[i], 3) - 4 * std::pow(xi[i], 2) + xi[i] + 1.0)) / 3;
+                                -(2.0 * xi[i] * (-4.0 * std::pow(xi[i], 3.0) - 4.0 * std::pow(xi[i], 2.0) + xi[i] + 1.0) *
+                                  (-8.0 * std::pow(eta[i], 3.0) + 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] - 1.0)) / 9.0;
+
+                        GradN_eta_gp[8][i] =
+                                -(eta[i] * xi[i] * (8.0 * std::pow(eta[i], 2.0) - 5.0) *
+                                  (-4.0 * std::pow(xi[i], 3.0) - 4.0 * std::pow(xi[i], 2.0) + xi[i] + 1.0)) / 3.0;
+
                         GradN_eta_gp[9][i] =
-                                -(2 * xi[i] * (-4 * std::pow(xi[i], 3) - 4 * std::pow(xi[i], 2) + xi[i] + 1.0) *
-                                  (-8 * std::pow(eta[i], 3) - 3 * std::pow(eta[i], 2) + 4 * eta[i] + 1.0)) / 9;
-                        GradN_eta_gp[10][i] = -(2 * xi[i] *
-                                                (-16 * std::pow(eta[i], 3) - 12 * std::pow(eta[i], 2) + 2 * eta[i] +
-                                                 1.0) *
-                                                (-2 * std::pow(xi[i], 3) - std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) / 9;
-                        GradN_eta_gp[11][i] = -((4 * std::pow(xi[i], 4) - 5 * std::pow(xi[i], 2) + 1.0) *
-                                                (-16 * std::pow(eta[i], 3) - 12 * std::pow(eta[i], 2) + 2 * eta[i] +
-                                                 1.0)) / 6;
+                                -(2.0 * xi[i] * (-4.0 * std::pow(xi[i], 3.0) - 4.0 * std::pow(xi[i], 2.0) + xi[i] + 1.0) *
+                                  (-8.0 * std::pow(eta[i], 3.0) - 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] + 1.0)) / 9.0;
+
+                        GradN_eta_gp[10][i] =
+                                -(2.0 * xi[i] * (-2.0 * std::pow(xi[i], 3.0) - std::pow(xi[i], 2.0) + 2.0 * xi[i] + 1.0) *
+                                  (-16.0 * std::pow(eta[i], 3.0) - 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] + 1.0)) / 9.0;
+
+                        GradN_eta_gp[11][i] =
+                                -((4.0 * std::pow(xi[i], 4.0) - 5.0 * std::pow(xi[i], 2.0) + 1.0) *
+                                  (-16.0 * std::pow(eta[i], 3.0) - 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] + 1.0)) / 6.0;
+
                         GradN_eta_gp[12][i] =
-                                -(2 * xi[i] * (-2 * std::pow(xi[i], 3) + std::pow(xi[i], 2) + 2 * xi[i] - 1.0) *
-                                  (-16 * std::pow(eta[i], 3) - 12 * std::pow(eta[i], 2) + 2 * eta[i] + 1.0)) / 9;
+                                -(2.0 * xi[i] * (-2.0 * std::pow(xi[i], 3.0) + std::pow(xi[i], 2.0) + 2.0 * xi[i] - 1.0) *
+                                  (-16.0 * std::pow(eta[i], 3.0) - 12.0 * std::pow(eta[i], 2.0) + 2.0 * eta[i] + 1.0)) / 9.0;
+
                         GradN_eta_gp[13][i] =
-                                -(2 * xi[i] * (-4 * std::pow(xi[i], 3) + 4 * std::pow(xi[i], 2) + xi[i] - 1.0) *
-                                  (-8 * std::pow(eta[i], 3) - 3 * std::pow(eta[i], 2) + 4 * eta[i] + 1.0)) / 9;
-                        GradN_eta_gp[14][i] = -(eta[i] * xi[i] * (8 * std::pow(eta[i], 2) - 5) *
-                                                (-4 * std::pow(xi[i], 3) + 4 * std::pow(xi[i], 2) + xi[i] - 1.0)) / 3;
+                                -(2.0 * xi[i] * (-4.0 * std::pow(xi[i], 3.0) + 4.0 * std::pow(xi[i], 2.0) + xi[i] - 1.0) *
+                                  (-8.0 * std::pow(eta[i], 3.0) - 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] + 1.0)) / 9.0;
+
+                        GradN_eta_gp[14][i] =
+                                -(eta[i] * xi[i] * (8.0 * std::pow(eta[i], 2.0) - 5.0) *
+                                  (-4.0 * std::pow(xi[i], 3.0) + 4.0 * std::pow(xi[i], 2.0) + xi[i] - 1.0)) / 3.0;
+
                         GradN_eta_gp[15][i] =
-                                -(2 * xi[i] * (-4 * std::pow(xi[i], 3) + 4 * std::pow(xi[i], 2) + xi[i] - 1.0) *
-                                  (-8 * std::pow(eta[i], 3) + 3 * std::pow(eta[i], 2) + 4 * eta[i] - 1.0)) / 9;
+                                -(2.0 * xi[i] * (-4.0 * std::pow(xi[i], 3.0) + 4.0 * std::pow(xi[i], 2.0) + xi[i] - 1.0) *
+                                  (-8.0 * std::pow(eta[i], 3.0) - 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] - 1.0)) / 9.0;
+
                         GradN_eta_gp[16][i] =
-                                (16 * xi[i] * (-2 * std::pow(xi[i], 3) + std::pow(xi[i], 2) + 2 * xi[i] - 1.0) *
-                                 (-8 * std::pow(eta[i], 3) + 3 * std::pow(eta[i], 2) + 4 * eta[i] - 1.0)) / 9;
-                        GradN_eta_gp[17][i] = (4 * (4 * std::pow(xi[i], 4) - 5 * std::pow(xi[i], 2) + 1.0) *
-                                               (-8 * std::pow(eta[i], 3) + 3 * std::pow(eta[i], 2) + 4 * eta[i] -
-                                                1.0)) / 3;
+                                (16.0 * xi[i] * (-2.0 * std::pow(xi[i], 3.0) + std::pow(xi[i], 2.0) + 2.0 * xi[i] - 1.0) *
+                                 (-8.0 * std::pow(eta[i], 3.0) - 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] + 1.0)) / 9.0;
+
+                        GradN_eta_gp[17][i] =
+                                (4.0 * (4.0 * std::pow(xi[i], 4.0) - 5.0 * std::pow(xi[i], 2.0) + 1.0) *
+                                 (-8.0 * std::pow(eta[i], 3.0) + 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] - 1.0)) / 6.0;
+
                         GradN_eta_gp[18][i] =
-                                (16 * xi[i] * (-8 * std::pow(eta[i], 3) + 3 * std::pow(eta[i], 2) + 4 * eta[i] - 1.0) *
-                                 (-2 * std::pow(xi[i], 3) - std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) / 9;
-                        GradN_eta_gp[19][i] = (8 * eta[i] * xi[i] * (8 * std::pow(eta[i], 2) - 5) *
-                                               (-2 * std::pow(xi[i], 3) - std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) / 3;
+                                (16.0 * xi[i] * (-8.0 * std::pow(eta[i], 3.0) + 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] - 1.0) *
+                                 (-2.0 * std::pow(xi[i], 3.0) - std::pow(xi[i], 2.0) + 2.0 * xi[i] + 1.0)) / 9.0;
+
+                        GradN_eta_gp[19][i] =
+                                (8.0 * eta[i] * xi[i] * (8.0 * std::pow(eta[i], 2.0) - 5.0) *
+                                 (-2.0 * std::pow(xi[i], 3.0) - std::pow(xi[i], 2.0) + 2.0 * xi[i] + 1.0)) / 3.0;
+
                         GradN_eta_gp[20][i] =
-                                (16 * xi[i] * (-8 * std::pow(eta[i], 3) - 3 * std::pow(eta[i], 2) + 4 * eta[i] + 1.0) *
-                                 (-2 * std::pow(xi[i], 3) - std::pow(xi[i], 2) + 2 * xi[i] + 1.0)) / 9;
-                        GradN_eta_gp[21][i] = (4 * (4 * std::pow(xi[i], 4) - 5 * std::pow(xi[i], 2) + 1.0) *
-                                               (-8 * std::pow(eta[i], 3) - 3 * std::pow(eta[i], 2) + 4 * eta[i] +
-                                                1.0)) / 3;
+                                (16.0 * xi[i] * (-8.0 * std::pow(eta[i], 3.0) - 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] + 1.0) *
+                                 (-2.0 * std::pow(xi[i], 3.0) - std::pow(xi[i], 2.0) + 2.0 * xi[i] + 1.0)) / 9.0;
+
+                        GradN_eta_gp[21][i] =
+                                (4.0 * (4.0 * std::pow(xi[i], 4.0) - 5.0 * std::pow(xi[i], 2.0) + 1.0) *
+                                 (-8.0 * std::pow(eta[i], 3.0) - 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] + 1.0)) / 3.0;
+
                         GradN_eta_gp[22][i] =
-                                (16 * xi[i] * (-2 * std::pow(xi[i], 3) + std::pow(xi[i], 2) + 2 * xi[i] - 1.0) *
-                                 (-8 * std::pow(eta[i], 3) - 3 * std::pow(eta[i], 2) + 4 * eta[i] + 1.0)) / 9;
-                        GradN_eta_gp[23][i] = (8 * eta[i] * xi[i] * (8 * std::pow(eta[i], 2) - 5) *
-                                               (-2 * std::pow(xi[i], 3) + std::pow(xi[i], 2) + 2 * xi[i] - 1.0)) / 3;
-                        GradN_eta_gp[24][i] = 2 * eta[i] * (8 * std::pow(eta[i], 2) - 5) *
-                                              (4 * std::pow(xi[i], 4) - 5 * std::pow(xi[i], 2) + 1.0);
+                                (16.0 * xi[i] * (-8.0 * std::pow(eta[i], 3.0) - 3.0 * std::pow(eta[i], 2.0) + 4.0 * eta[i] + 1.0) *
+                                 (-2.0 * std::pow(xi[i], 3.0) + std::pow(xi[i], 2.0) + 2.0 * xi[i] - 1.0)) / 9.0;
+
+                        GradN_eta_gp[23][i] =
+                                (8.0 * eta[i] * xi[i] * (8.0 * std::pow(eta[i], 2.0) - 5.0) *
+                                 (-2.0 * std::pow(xi[i], 3.0) + std::pow(xi[i], 2.0) + 2.0 * xi[i] - 1.0)) / 3.0;
+
+                        GradN_eta_gp[24][i] =
+                                2.0 * eta[i] * (8.0 * std::pow(eta[i], 2.0) - 5.0) *
+                                (4.0 * std::pow(xi[i], 4.0) - 5.0 * std::pow(xi[i], 2.0) + 1.0);
+
                     }
                     break;
             }
@@ -755,47 +883,49 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
         case 3 :
             switch (degree) {
                 case 1 :
-                    N_xi_gp.resize(8, std::vector<double>(NGP));
-                    GradN_xi_gp.resize(8, std::vector<double>(NGP));
-                    GradN_eta_gp.resize(8, std::vector<double>(NGP));
-                    GradN_zeta_gp.resize(8, std::vector<double>(NGP));
+                    N_xi_gp.assign(8, std::vector<double>(NGP, 0.0));
+                    GradN_xi_gp.assign(8, std::vector<double>(NGP, 0.0));
+                    GradN_eta_gp.assign(8, std::vector<double>(NGP, 0.0));
+                    GradN_zeta_gp.assign(8, std::vector<double>(NGP, 0.0));
 
                     for (int i = 0; i < NGP; i++) {
-                        N_xi_gp[0][i] = 1 / 8 * (1.0 - xi[i]) * (1.0 - eta[i]) * (1.0 - zeta[i]);
-                        N_xi_gp[1][i] = 1 / 8 * (1.0 + xi[i]) * (1.0 - eta[i]) * (1.0 - zeta[i]);
-                        N_xi_gp[2][i] = 1 / 8 * (1.0 + xi[i]) * (1.0 + eta[i]) * (1.0 - zeta[i]);
-                        N_xi_gp[3][i] = 1 / 8 * (1.0 - xi[i]) * (1.0 + eta[i]) * (1.0 - zeta[i]);
-                        N_xi_gp[4][i] = 1 / 8 * (1.0 - xi[i]) * (1.0 - eta[i]) * (1.0 + zeta[i]);
-                        N_xi_gp[5][i] = 1 / 8 * (1.0 + xi[i]) * (1.0 - eta[i]) * (1.0 + zeta[i]);
-                        N_xi_gp[6][i] = 1 / 8 * (1.0 + xi[i]) * (1.0 + eta[i]) * (1.0 + zeta[i]);
-                        N_xi_gp[7][i] = 1 / 8 * (1.0 - xi[i]) * (1.0 + eta[i]) * (1.0 + zeta[i]);
+                        N_xi_gp[0][i] = (1.0 / 8.0) * (1.0 - xi[i]) * (1.0 - eta[i]) * (1.0 - zeta[i]);
+                        N_xi_gp[1][i] = (1.0 / 8.0) * (1.0 + xi[i]) * (1.0 - eta[i]) * (1.0 - zeta[i]);
+                        N_xi_gp[2][i] = (1.0 / 8.0) * (1.0 + xi[i]) * (1.0 + eta[i]) * (1.0 - zeta[i]);
+                        N_xi_gp[2][i] = (1.0 / 8.0) * (1.0 + xi[i]) * (1.0 + eta[i]) * (1.0 - zeta[i]);
+                        N_xi_gp[3][i] = (1.0 / 8.0) * (1.0 - xi[i]) * (1.0 + eta[i]) * (1.0 - zeta[i]);
+                        N_xi_gp[4][i] = (1.0 / 8.0) * (1.0 - xi[i]) * (1.0 - eta[i]) * (1.0 + zeta[i]);
+                        N_xi_gp[5][i] = (1.0 / 8.0) * (1.0 + xi[i]) * (1.0 - eta[i]) * (1.0 + zeta[i]);
+                        N_xi_gp[6][i] = (1.0 / 8.0) * (1.0 + xi[i]) * (1.0 + eta[i]) * (1.0 + zeta[i]);
+                        N_xi_gp[7][i] = (1.0 / 8.0) * (1.0 - xi[i]) * (1.0 + eta[i]) * (1.0 + zeta[i]);
 
-                        GradN_xi_gp[0][i] = -1 / 8 * (1.0 - eta[i]) * (1.0 - zeta[i]);
-                        GradN_xi_gp[1][i] = 1 / 8 * (1.0 - eta[i]) * (1.0 - zeta[i]);
-                        GradN_xi_gp[2][i] = 1 / 8 * (1.0 + eta[i]) * (1.0 - zeta[i]);
-                        GradN_xi_gp[3][i] = -1 / 8 * (1.0 + eta[i]) * (1.0 - zeta[i]);
-                        GradN_xi_gp[4][i] = -1 / 8 * (1.0 - eta[i]) * (1.0 + zeta[i]);
-                        GradN_xi_gp[5][i] = 1 / 8 * (1.0 - eta[i]) * (1.0 + zeta[i]);
-                        GradN_xi_gp[6][i] = 1 / 8 * (1.0 + eta[i]) * (1.0 + zeta[i]);
-                        GradN_xi_gp[7][i] = -1 / 8 * (1.0 + eta[i]) * (1.0 + zeta[i]);
+                        GradN_xi_gp[0][i] = (-1.0 / 8.0) * (1.0 - eta[i]) * (1.0 - zeta[i]);
+                        GradN_xi_gp[1][i] = (1.0 / 8.0) * (1.0 - eta[i]) * (1.0 - zeta[i]);
+                        GradN_xi_gp[2][i] = (1.0 / 8.0) * (1.0 + eta[i]) * (1.0 - zeta[i]);
+                        GradN_xi_gp[3][i] = (-1.0 / 8.0) * (1.0 + eta[i]) * (1.0 - zeta[i]);
+                        GradN_xi_gp[4][i] = (-1.0 / 8.0) * (1.0 - eta[i]) * (1.0 + zeta[i]);
+                        GradN_xi_gp[5][i] = (1.0 / 8.0) * (1.0 - eta[i]) * (1.0 + zeta[i]);
+                        GradN_xi_gp[6][i] = (1.0 / 8.0) * (1.0 + eta[i]) * (1.0 + zeta[i]);
+                        GradN_xi_gp[7][i] = (-1.0 / 8.0) * (1.0 + eta[i]) * (1.0 + zeta[i]);
 
-                        GradN_eta_gp[0][i] = -1 / 8 * (1.0 - xi[i]) * (1.0 - zeta[i]);
-                        GradN_eta_gp[1][i] = -1 / 8 * (1.0 + xi[i]) * (1.0 - zeta[i]);
-                        GradN_eta_gp[2][i] = 1 / 8 * (1.0 + xi[i]) * (1.0 - zeta[i]);
-                        GradN_eta_gp[3][i] = 1 / 8 * (1.0 - xi[i]) * (1.0 - zeta[i]);
-                        GradN_eta_gp[4][i] = -1 / 8 * (1.0 - xi[i]) * (1.0 + zeta[i]);
-                        GradN_eta_gp[5][i] = -1 / 8 * (1.0 + xi[i]) * (1.0 + zeta[i]);
-                        GradN_eta_gp[6][i] = 1 / 8 * (1.0 + xi[i]) * (1.0 + zeta[i]);
-                        GradN_eta_gp[7][i] = 1 / 8 * (1.0 - xi[i]) * (1.0 + zeta[i]);
+                        GradN_eta_gp[0][i] = (-1.0 / 8.0) * (1.0 - xi[i]) * (1.0 - zeta[i]);
+                        GradN_eta_gp[1][i] = (-1.0 / 8.0) * (1.0 + xi[i]) * (1.0 - zeta[i]);
+                        GradN_eta_gp[2][i] = (1.0 / 8.0) * (1.0 + xi[i]) * (1.0 - zeta[i]);
+                        GradN_eta_gp[3][i] = (1.0 / 8.0) * (1.0 - xi[i]) * (1.0 - zeta[i]);
+                        GradN_eta_gp[4][i] = (-1.0 / 8.0) * (1.0 - xi[i]) * (1.0 + zeta[i]);
+                        GradN_eta_gp[5][i] = (-1.0 / 8.0) * (1.0 + xi[i]) * (1.0 + zeta[i]);
+                        GradN_eta_gp[6][i] = (1.0 / 8.0) * (1.0 + xi[i]) * (1.0 + zeta[i]);
+                        GradN_eta_gp[7][i] = (1.0 / 8.0) * (1.0 - xi[i]) * (1.0 + zeta[i]);
 
-                        GradN_zeta_gp[0][i] = -1 / 8 * (1.0 - xi[i]) * (1.0 - eta[i]);
-                        GradN_zeta_gp[1][i] = -1 / 8 * (1.0 + xi[i]) * (1.0 - eta[i]);
-                        GradN_zeta_gp[2][i] = -1 / 8 * (1.0 + xi[i]) * (1.0 + eta[i]);
-                        GradN_zeta_gp[3][i] = -1 / 8 * (1.0 - xi[i]) * (1.0 + eta[i]);
-                        GradN_zeta_gp[4][i] = 1 / 8 * (1.0 - xi[i]) * (1.0 - eta[i]);
-                        GradN_zeta_gp[5][i] = 1 / 8 * (1.0 + xi[i]) * (1.0 - eta[i]);
-                        GradN_zeta_gp[6][i] = 1 / 8 * (1.0 + xi[i]) * (1.0 + eta[i]);
-                        GradN_zeta_gp[7][i] = 1 / 8 * (1.0 - xi[i]) * (1.0 + eta[i]);
+                        GradN_zeta_gp[0][i] = (-1.0 / 8.0) * (1.0 - xi[i]) * (1.0 - eta[i]);
+                        GradN_zeta_gp[1][i] = (-1.0 / 8.0) * (1.0 + xi[i]) * (1.0 - eta[i]);
+                        GradN_zeta_gp[2][i] = (-1.0 / 8.0) * (1.0 + xi[i]) * (1.0 + eta[i]);
+                        GradN_zeta_gp[3][i] = (-1.0 / 8.0) * (1.0 - xi[i]) * (1.0 + eta[i]);
+                        GradN_zeta_gp[4][i] = (1.0 / 8.0) * (1.0 - xi[i]) * (1.0 - eta[i]);
+                        GradN_zeta_gp[5][i] = (1.0 / 8.0) * (1.0 + xi[i]) * (1.0 - eta[i]);
+                        GradN_zeta_gp[6][i] = (1.0 / 8.0) * (1.0 + xi[i]) * (1.0 + eta[i]);
+                        GradN_zeta_gp[7][i] = (1.0 / 8.0) * (1.0 - xi[i]) * (1.0 + eta[i]);
+
                     }
                     break;
                 case 2 :
@@ -805,209 +935,280 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                     GradN_zeta_gp.resize(27, std::vector<double>(NGP));
 
                     for (int i = 0; i < (NGP); i++) {
-                        N_xi_gp[0][i] = (1 / 8) * (xi[i]) * (xi[i] - 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i]) *
-                                        (zeta[i] - 1.0);
-                        N_xi_gp[1][i] = (1 / 8) * (xi[i]) * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i]) *
-                                        (zeta[i] - 1.0);
-                        N_xi_gp[2][i] = (1 / 8) * (xi[i]) * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i]) *
-                                        (zeta[i] - 1.0);
-                        N_xi_gp[3][i] = (1 / 8) * (xi[i]) * (xi[i] - 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i]) *
-                                        (zeta[i] - 1.0);
-                        N_xi_gp[4][i] = (1 / 8) * (xi[i]) * (xi[i] - 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i]) *
-                                        (zeta[i] + 1.0);
-                        N_xi_gp[5][i] = (1 / 8) * (xi[i]) * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i]) *
-                                        (zeta[i] + 1.0);
-                        N_xi_gp[6][i] = (1 / 8) * (xi[i]) * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i]) *
-                                        (zeta[i] + 1.0);
-                        N_xi_gp[7][i] = (1 / 8) * (xi[i]) * (xi[i] - 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i]) *
-                                        (zeta[i] + 1.0);
-                        N_xi_gp[8][i] = -(1 / 4) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i]) *
-                                        (zeta[i] - 1.0);
-                        N_xi_gp[9][i] =
-                                -(1 / 4) * (xi[i]) * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * (zeta[i]) *
-                                (zeta[i] - 1.0);
-                        N_xi_gp[10][i] =
-                                -(1 / 4) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i]) *
-                                (zeta[i] - 1.0);
-                        N_xi_gp[11][i] =
-                                -(1 / 4) * (xi[i]) * (xi[i] - 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * (zeta[i]) *
-                                (zeta[i] - 1.0);
-                        N_xi_gp[12][i] =
-                                -(1 / 4) * (xi[i]) * (xi[i] - 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i] - 1.0) *
-                                (zeta[i] + 1.0);
-                        N_xi_gp[13][i] =
-                                -(1 / 4) * (xi[i]) * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i] - 1.0) *
-                                (zeta[i] + 1.0);
-                        N_xi_gp[14][i] =
-                                -(1 / 4) * (xi[i]) * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i] - 1.0) *
-                                (zeta[i] + 1.0);
-                        N_xi_gp[15][i] =
-                                -(1 / 4) * (xi[i]) * (xi[i] - 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i] - 1.0) *
-                                (zeta[i] + 1.0);
-                        N_xi_gp[16][i] =
-                                -(1 / 4) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i]) *
-                                (zeta[i] + 1.0);
-                        N_xi_gp[17][i] =
-                                -(1 / 4) * (xi[i]) * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * (zeta[i]) *
-                                (zeta[i] + 1.0);
-                        N_xi_gp[18][i] =
-                                -(1 / 4) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i]) *
-                                (zeta[i] + 1.0);
-                        N_xi_gp[19][i] =
-                                -(1 / 4) * (xi[i]) * (xi[i] - 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * (zeta[i]) *
-                                (zeta[i] + 1.0);
-                        N_xi_gp[20][i] = (1.0 / 2.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) *
-                                         (zeta[i]) * (zeta[i] - 1.0);
-                        N_xi_gp[21][i] = (1.0 / 2.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) *
-                                         (zeta[i] - 1.0) * (zeta[i] + 1.0);
-                        N_xi_gp[22][i] = (1.0 / 2.0) * (xi[i]) * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) *
-                                         (zeta[i] - 1.0) * (zeta[i] + 1.0);
-                        N_xi_gp[23][i] = (1.0 / 2.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) *
-                                         (zeta[i] - 1.0) * (zeta[i] + 1.0);
-                        N_xi_gp[24][i] = (1.0 / 2.0) * (xi[i]) * (xi[i] - 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) *
-                                         (zeta[i] - 1.0) * (zeta[i] + 1.0);
-                        N_xi_gp[25][i] = (1.0 / 2.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) *
-                                         (zeta[i]) * (zeta[i] + 1.0);
-                        N_xi_gp[26][i] = -(1.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) *
-                                         (zeta[i] - 1.0) * (zeta[i] + 1.0);
+                        N_xi_gp[0][i] = (1.0 / 8.0) * xi[i] * (xi[i] - 1.0) * eta[i] * (eta[i] - 1.0) * zeta[i] * (zeta[i] - 1.0);
+                        N_xi_gp[1][i] = (1.0 / 8.0) * xi[i] * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * zeta[i] * (zeta[i] - 1.0);
+                        N_xi_gp[2][i] = (1.0 / 8.0) * xi[i] * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * zeta[i] * (zeta[i] - 1.0);
+                        N_xi_gp[3][i] = (1.0 / 8.0) * xi[i] * (xi[i] - 1.0) * eta[i] * (eta[i] + 1.0) * zeta[i] * (zeta[i] - 1.0);
+                        N_xi_gp[4][i] = (1.0 / 8.0) * xi[i] * (xi[i] - 1.0) * eta[i] * (eta[i] - 1.0) * zeta[i] * (zeta[i] + 1.0);
+                        N_xi_gp[5][i] = (1.0 / 8.0) * xi[i] * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * zeta[i] * (zeta[i] + 1.0);
+                        N_xi_gp[6][i] = (1.0 / 8.0) * xi[i] * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * zeta[i] * (zeta[i] + 1.0);
+                        N_xi_gp[7][i] = (1.0 / 8.0) * xi[i] * (xi[i] - 1.0) * eta[i] * (eta[i] + 1.0) * zeta[i] * (zeta[i] + 1.0);
+
+                        N_xi_gp[8][i] = -(1.0 / 4.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * zeta[i] * (zeta[i] - 1.0);
+                        N_xi_gp[9][i] = -(1.0 / 4.0) * xi[i] * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * zeta[i] * (zeta[i] - 1.0);
+                        N_xi_gp[10][i] = -(1.0 / 4.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * zeta[i] * (zeta[i] - 1.0);
+                        N_xi_gp[11][i] = -(1.0 / 4.0) * xi[i] * (xi[i] - 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * zeta[i] * (zeta[i] - 1.0);
+                        N_xi_gp[12][i] = -(1.0 / 4.0) * xi[i] * (xi[i] - 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i] - 1.0) * (zeta[i] + 1.0);
+                        N_xi_gp[13][i] = -(1.0 / 4.0) * xi[i] * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i] - 1.0) * (zeta[i] + 1.0);
+                        N_xi_gp[14][i] = -(1.0 / 4.0) * xi[i] * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i] - 1.0) * (zeta[i] + 1.0);
+                        N_xi_gp[15][i] = -(1.0 / 4.0) * xi[i] * (xi[i] - 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i] - 1.0) * (zeta[i] + 1.0);
+                        N_xi_gp[16][i] = -(1.0 / 4.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * zeta[i] * (zeta[i] + 1.0);
+                        N_xi_gp[17][i] = -(1.0 / 4.0) * xi[i] * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * zeta[i] * (zeta[i] + 1.0);
+                        N_xi_gp[18][i] = -(1.0 / 4.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * zeta[i] * (zeta[i] + 1.0);
+                        N_xi_gp[19][i] = -(1.0 / 4.0) * xi[i] * (xi[i] - 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * zeta[i] * (zeta[i] + 1.0);
+
+                        N_xi_gp[20][i] = (1.0 / 2.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * zeta[i] * (zeta[i] - 1.0);
+                        N_xi_gp[21][i] = (1.0 / 2.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * (zeta[i] - 1.0) * (zeta[i] + 1.0);
+                        N_xi_gp[22][i] = (1.0 / 2.0) * xi[i] * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * (zeta[i] - 1.0) * (zeta[i] + 1.0);
+                        N_xi_gp[23][i] = (1.0 / 2.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * (zeta[i] - 1.0) * (zeta[i] + 1.0);
+                        N_xi_gp[24][i] = (1.0 / 2.0) * xi[i] * (xi[i] - 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * (zeta[i] - 1.0) * (zeta[i] + 1.0);
+                        N_xi_gp[25][i] = (1.0 / 2.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * zeta[i] * (zeta[i] + 1.0);
+
+                        N_xi_gp[26][i] = -(1.0) * (xi[i] - 1.0) * (xi[i] + 1.0) * (eta[i] - 1.0) * (eta[i] + 1.0) * (zeta[i] - 1.0) * (zeta[i] + 1.0);
+
 
                         GradN_xi_gp[0][i] =
-                                (eta[i] * zeta[i] * (2 * xi[i] - 1.0) * (eta[i] - 1.0) * (zeta[i] - 1.0)) / 8;
+                                (eta[i] * zeta[i] * (2.0 * xi[i]) * (eta[i] - 1.0) * (zeta[i] - 1.0)) / 8.0;
+
                         GradN_xi_gp[1][i] =
-                                (eta[i] * zeta[i] * (2 * xi[i] + 1.0) * (eta[i] - 1.0) * (zeta[i] - 1.0)) / 8;
+                                (eta[i] * zeta[i] * (2.0 * xi[i] + 1.0) * (eta[i] - 1.0) * (zeta[i] - 1.0)) / 8.0;
+
                         GradN_xi_gp[2][i] =
-                                (eta[i] * zeta[i] * (2 * xi[i] + 1.0) * (eta[i] + 1.0) * (zeta[i] - 1.0)) / 8;
+                                (eta[i] * zeta[i] * (2.0 * xi[i] + 1.0) * (eta[i] + 1.0) * (zeta[i] - 1.0)) / 8.0;
+
                         GradN_xi_gp[3][i] =
-                                (eta[i] * zeta[i] * (2 * xi[i] - 1.0) * (eta[i] + 1.0) * (zeta[i] - 1.0)) / 8;
+                                (eta[i] * zeta[i] * (2.0 * xi[i] - 1.0) * (eta[i] + 1.0) * (zeta[i] - 1.0)) / 8.0;
+
                         GradN_xi_gp[4][i] =
-                                (eta[i] * zeta[i] * (2 * xi[i] - 1.0) * (eta[i] - 1.0) * (zeta[i] + 1.0)) / 8;
+                                (eta[i] * zeta[i] * (2.0 * xi[i] - 1.0) * (eta[i] - 1.0) * (zeta[i] + 1.0)) / 8.0;
+
                         GradN_xi_gp[5][i] =
-                                (eta[i] * zeta[i] * (2 * xi[i] + 1.0) * (eta[i] - 1.0) * (zeta[i] + 1.0)) / 8;
+                                (eta[i] * zeta[i] * (2.0 * xi[i] + 1.0) * (eta[i] - 1.0) * (zeta[i] + 1.0)) / 8.0;
+
                         GradN_xi_gp[6][i] =
-                                (eta[i] * zeta[i] * (2 * xi[i] + 1.0) * (eta[i] + 1.0) * (zeta[i] + 1.0)) / 8;
+                                (eta[i] * zeta[i] * (2.0 * xi[i] + 1.0) * (eta[i] + 1.0) * (zeta[i] + 1.0)) / 8.0;
+
                         GradN_xi_gp[7][i] =
-                                (eta[i] * zeta[i] * (2 * xi[i] - 1.0) * (eta[i] + 1.0) * (zeta[i] + 1.0)) / 8;
-                        GradN_xi_gp[8][i] = -(eta[i] * xi[i] * zeta[i] * (eta[i] - 1.0) * (zeta[i] - 1.0)) / 2;
+                                (eta[i] * zeta[i] * (2.0 * xi[i] - 1.0) * (eta[i] + 1.0) * (zeta[i] + 1.0)) / 8.0;
+
+                        GradN_xi_gp[8][i] =
+                                -(1.0 / 4.0) * (2.0 * xi[i]) * (eta[i]) * (eta[i] - 1.0) * zeta[i] * (zeta[i] - 1.0);
+
                         GradN_xi_gp[9][i] =
-                                -(zeta[i] * (std::pow(eta[i], 2) - 1.0) * (2 * xi[i] + 1.0) * (zeta[i] - 1.0)) / 4;
-                        GradN_xi_gp[10][i] = -(eta[i] * xi[i] * zeta[i] * (eta[i] + 1.0) * (zeta[i] - 1.0)) / 2;
+                                -(1.0 / 4.0) * (2.0 * xi[i] + 1.0) * (std::pow(eta[i], 2.0) - 1.0) * zeta[i] * (zeta[i] - 1.0);
+
+                        GradN_xi_gp[10][i] =
+                                -(1.0 / 4.0) * (2.0 * xi[i]) * eta[i] * (eta[i] + 1.0) * zeta[i] * (zeta[i] - 1.0);
+
                         GradN_xi_gp[11][i] =
-                                -(zeta[i] * (std::pow(eta[i], 2) - 1.0) * (2 * xi[i] - 1.0) * (zeta[i] - 1.0)) / 4;
+                                -(1.0 / 4.0) * (2.0 * xi[i] - 1.0) * (std::pow(eta[i], 2.0) - 1.0) * zeta[i] * (zeta[i] - 1.0);
+
                         GradN_xi_gp[12][i] =
-                                -(eta[i] * (2 * xi[i] - 1.0) * (std::pow(zeta[i], 2) - 1.0) * (eta[i] - 1.0)) / 4;
+                                -(1.0 / 4.0) * (2.0 * xi[i] - 1.0) * eta[i] * (eta[i] - 1.0) * (std::pow(zeta[i], 2.0) - 1.0);
+
                         GradN_xi_gp[13][i] =
-                                -(eta[i] * (2 * xi[i] + 1.0) * (std::pow(zeta[i], 2) - 1.0) * (eta[i] - 1.0)) / 4;
+                                -(1.0 / 4.0) * (2.0 * xi[i] + 1.0) * eta[i] * (eta[i] - 1.0) * (std::pow(zeta[i], 2.0) - 1.0);
+
                         GradN_xi_gp[14][i] =
-                                -(eta[i] * (2 * xi[i] + 1.0) * (std::pow(zeta[i], 2) - 1.0) * (eta[i] + 1.0)) / 4;
+                                -(1.0 / 4.0) * (2.0 * xi[i] + 1.0) * eta[i] * (eta[i] + 1.0) * (std::pow(zeta[i], 2.0) - 1.0);
+
                         GradN_xi_gp[15][i] =
-                                -(eta[i] * (2 * xi[i] - 1.0) * (std::pow(zeta[i], 2) - 1.0) * (eta[i] + 1.0)) / 4;
-                        GradN_xi_gp[16][i] = -(eta[i] * xi[i] * zeta[i] * (eta[i] - 1.0) * (zeta[i] + 1.0)) / 2;
+                                -(1.0 / 4.0) * (2.0 * xi[i] - 1.0) * eta[i] * (eta[i] + 1.0) * (std::pow(zeta[i], 2.0) - 1.0);
+
+                        GradN_xi_gp[16][i] =
+                                -(1.0 / 4.0) * (2.0 * xi[i]) * eta[i] * (eta[i] - 1.0) * zeta[i] * (zeta[i] + 1.0);
+
                         GradN_xi_gp[17][i] =
-                                -(zeta[i] * (std::pow(eta[i], 2) - 1.0) * (2 * xi[i] + 1.0) * (zeta[i] + 1.0)) / 4;
-                        GradN_xi_gp[18][i] = -(eta[i] * xi[i] * zeta[i] * (eta[i] + 1.0) * (zeta[i] + 1.0)) / 2;
+                                -(1.0 / 4.0) * (2.0 * xi[i] + 1.0) * (std::pow(eta[i], 2.0) - 1.0) * zeta[i] * (zeta[i] + 1.0);
+
+                        GradN_xi_gp[18][i] =
+                                -(1.0 / 4.0) * (2.0 * xi[i]) * eta[i] * (eta[i] + 1.0) * zeta[i] * (zeta[i] + 1.0);
+
                         GradN_xi_gp[19][i] =
-                                -(zeta[i] * (std::pow(eta[i], 2) - 1.0) * (2 * xi[i] - 1.0) * (zeta[i] + 1.0)) / 4;
-                        GradN_xi_gp[20][i] = xi[i] * zeta[i] * (std::pow(eta[i], 2) - 1.0) * (zeta[i] - 1.0);
-                        GradN_xi_gp[21][i] = eta[i] * xi[i] * (std::pow(zeta[i], 2) - 1.0) * (eta[i] - 1.0);
+                                -(1.0 / 4.0) * (2.0 * xi[i] - 1.0) * (std::pow(eta[i], 2.0) - 1.0) * zeta[i] * (zeta[i] + 1.0);
+
+                        GradN_xi_gp[20][i] =
+                                xi[i] * zeta[i] * (std::pow(eta[i], 2.0) - 1.0) * (zeta[i] - 1.0);
+
+                        GradN_xi_gp[21][i] =
+                                eta[i] * xi[i] * (eta[i] - 1.0) * (std::pow(zeta[i], 2.0) - 1.0);
+
                         GradN_xi_gp[22][i] =
-                                ((std::pow(eta[i], 2) - 1.0) * (2 * xi[i] + 1.0) * (std::pow(zeta[i], 2) - 1.0)) / 2;
-                        GradN_xi_gp[23][i] = eta[i] * xi[i] * (std::pow(zeta[i], 2) - 1.0) * (eta[i] + 1.0);
+                                (1.0 / 2.0) * (2.0 * xi[i] + 1.0) * (std::pow(eta[i], 2.0) - 1.0) * (std::pow(zeta[i], 2.0) - 1.0);
+
+                        GradN_xi_gp[23][i] =
+                                eta[i] * xi[i] * (eta[i] + 1.0) * (std::pow(zeta[i], 2.0) - 1.0);
+
                         GradN_xi_gp[24][i] =
-                                ((std::pow(eta[i], 2) - 1.0) * (2 * xi[i] - 1.0) * (std::pow(zeta[i], 2) - 1.0)) / 2;
-                        GradN_xi_gp[25][i] = xi[i] * zeta[i] * (std::pow(eta[i], 2) - 1.0) * (zeta[i] + 1.0);
-                        GradN_xi_gp[26][i] = -2 * xi[i] * (std::pow(eta[i], 2) - 1.0) * (std::pow(zeta[i], 2) - 1.0);
+                                ((std::pow(eta[i], 2.0) - 1.0) * (2.0 * xi[i] - 1.0) * (std::pow(zeta[i], 2.0) - 1.0)) / 2.0;
+
+                        GradN_xi_gp[25][i] =
+                                xi[i] * zeta[i] * (std::pow(eta[i], 2.0) - 1.0) * (zeta[i] + 1.0);
+
+                        GradN_xi_gp[26][i] =
+                                -2.0 * xi[i] * (std::pow(eta[i], 2.0) - 1.0) * (std::pow(zeta[i], 2.0) - 1.0);
 
                         GradN_eta_gp[0][i] =
-                                (xi[i] * zeta[i] * (2 * eta[i] - 1.0) * (xi[i] - 1.0) * (zeta[i] - 1.0)) / 8;
+                                (xi[i] * zeta[i] * (2.0 * eta[i] - 1.0) * (xi[i] - 1.0) * (zeta[i] - 1.0)) / 8.0;
+
                         GradN_eta_gp[1][i] =
-                                (xi[i] * zeta[i] * (2 * eta[i] - 1.0) * (xi[i] + 1.0) * (zeta[i] - 1.0)) / 8;
+                                (xi[i] * zeta[i] * (2.0 * eta[i] - 1.0) * (xi[i] + 1.0) * (zeta[i] - 1.0)) / 8.0;
+
                         GradN_eta_gp[2][i] =
-                                (xi[i] * zeta[i] * (2 * eta[i] + 1.0) * (xi[i] + 1.0) * (zeta[i] - 1.0)) / 8;
+                                (xi[i] * zeta[i] * (2.0 * eta[i] + 1.0) * (xi[i] + 1.0) * (zeta[i] - 1.0)) / 8.0;
+
                         GradN_eta_gp[3][i] =
-                                (xi[i] * zeta[i] * (2 * eta[i] + 1.0) * (xi[i] - 1.0) * (zeta[i] - 1.0)) / 8;
+                                (xi[i] * zeta[i] * (2.0 * eta[i] + 1.0) * (xi[i] - 1.0) * (zeta[i] - 1.0)) / 8.0;
+
                         GradN_eta_gp[4][i] =
-                                (xi[i] * zeta[i] * (2 * eta[i] - 1.0) * (xi[i] - 1.0) * (zeta[i] + 1.0)) / 8;
+                                (xi[i] * zeta[i] * (2.0 * eta[i] - 1.0) * (xi[i] - 1.0) * (zeta[i] + 1.0)) / 8.0;
+
                         GradN_eta_gp[5][i] =
-                                (xi[i] * zeta[i] * (2 * eta[i] - 1.0) * (xi[i] + 1.0) * (zeta[i] + 1.0)) / 8;
+                                (xi[i] * zeta[i] * (2.0 * eta[i] - 1.0) * (xi[i] + 1.0) * (zeta[i] + 1.0)) / 8.0;
+
                         GradN_eta_gp[6][i] =
-                                (xi[i] * zeta[i] * (2 * eta[i] + 1.0) * (xi[i] + 1.0) * (zeta[i] + 1.0)) / 8;
+                                (xi[i] * zeta[i] * (2.0 * eta[i] + 1.0) * (xi[i] + 1.0) * (zeta[i] + 1.0)) / 8.0;
+
                         GradN_eta_gp[7][i] =
-                                (xi[i] * zeta[i] * (2 * eta[i] + 1.0) * (xi[i] - 1.0) * (zeta[i] + 1.0)) / 8;
+                                (xi[i] * zeta[i] * (2.0 * eta[i] + 1.0) * (xi[i] - 1.0) * (zeta[i] + 1.0)) / 8.0;
+
                         GradN_eta_gp[8][i] =
-                                -(zeta[i] * (2 * eta[i] - 1.0) * (std::pow(xi[i], 2) - 1.0) * (zeta[i] - 1.0)) / 4;
-                        GradN_eta_gp[9][i] = -(eta[i] * xi[i] * zeta[i] * (xi[i] + 1.0) * (zeta[i] - 1.0)) / 2;
+                                -(zeta[i] * (2.0 * eta[i] - 1.0) * (std::pow(xi[i], 2.0) - 1.0) * (zeta[i] - 1.0)) / 4.0;
+
+                        GradN_eta_gp[9][i] =
+                                -(eta[i] * xi[i] * zeta[i] * (xi[i] + 1.0) * (zeta[i] - 1.0)) / 2.0;
+
                         GradN_eta_gp[10][i] =
-                                -(zeta[i] * (2 * eta[i] + 1.0) * (std::pow(xi[i], 2) - 1.0) * (zeta[i] - 1.0)) / 4;
-                        GradN_eta_gp[11][i] = -(eta[i] * xi[i] * zeta[i] * (xi[i] - 1.0) * (zeta[i] - 1.0)) / 2;
+                                -(zeta[i] * (2.0 * eta[i] + 1.0) * (std::pow(xi[i], 2.0) - 1.0) * (zeta[i] - 1.0)) / 4.0;
+
+                        GradN_eta_gp[11][i] =
+                                -(eta[i] * xi[i] * zeta[i] * (xi[i] - 1.0) * (zeta[i] - 1.0)) / 4.0;
+
                         GradN_eta_gp[12][i] =
-                                -(xi[i] * (2 * eta[i] - 1.0) * (std::pow(zeta[i], 2) - 1.0) * (xi[i] - 1.0)) / 4;
+                                -(xi[i] * (2.0 * eta[i] - 1.0) * (std::pow(zeta[i], 2.0) - 1.0) * (xi[i] - 1.0)) / 4.0;
+
                         GradN_eta_gp[13][i] =
-                                -(xi[i] * (2 * eta[i] - 1.0) * (std::pow(zeta[i], 2) - 1.0) * (xi[i] + 1.0)) / 4;
+                                -(xi[i] * (2.0 * eta[i] - 1.0) * (std::pow(zeta[i], 2.0) - 1.0) * (xi[i] + 1.0)) / 4.0;
+
                         GradN_eta_gp[14][i] =
-                                -(xi[i] * (2 * eta[i] + 1.0) * (std::pow(zeta[i], 2) - 1.0) * (xi[i] + 1.0)) / 4;
+                                -(xi[i] * (2.0 * eta[i] + 1.0) * (std::pow(zeta[i], 2.0) - 1.0) * (xi[i] + 1.0)) / 4.0;
+
                         GradN_eta_gp[15][i] =
-                                -(xi[i] * (2 * eta[i] + 1.0) * (std::pow(zeta[i], 2) - 1.0) * (xi[i] - 1.0)) / 4;
+                                -(xi[i] * (2.0 * eta[i] + 1.0) * (std::pow(zeta[i], 2.0) - 1.0) * (xi[i] - 1.0)) / 4.0;
+
                         GradN_eta_gp[16][i] =
-                                -(zeta[i] * (2 * eta[i] - 1.0) * (std::pow(xi[i], 2) - 1.0) * (zeta[i] + 1.0)) / 4;
-                        GradN_eta_gp[17][i] = -(eta[i] * xi[i] * zeta[i] * (xi[i] + 1.0) * (zeta[i] + 1.0)) / 2;
+                                -(zeta[i] * (2.0 * eta[i] - 1.0) * (std::pow(xi[i], 2.0) - 1.0) * (zeta[i] + 1.0)) / 4.0;
+
+                        GradN_eta_gp[17][i] =
+                                -(eta[i] * xi[i] * zeta[i] * (xi[i] + 1.0) * (zeta[i] + 1.0)) / 2.0;
+
                         GradN_eta_gp[18][i] =
-                                -(zeta[i] * (2 * eta[i] + 1.0) * (std::pow(xi[i], 2) - 1.0) * (zeta[i] + 1.0)) / 4;
-                        GradN_eta_gp[19][i] = -(eta[i] * xi[i] * zeta[i] * (xi[i] - 1.0) * (zeta[i] + 1.0)) / 2;
-                        GradN_eta_gp[20][i] = eta[i] * zeta[i] * (std::pow(xi[i], 2) - 1.0) * (zeta[i] - 1.0);
+                                -(zeta[i] * (2.0 * eta[i] + 1.0) * (std::pow(xi[i], 2.0) - 1.0) * (zeta[i] + 1.0)) / 4.0;
+
+                        GradN_eta_gp[19][i] =
+                                -(eta[i] * xi[i] * zeta[i] * (xi[i] - 1.0) * (zeta[i] + 1.0)) / 4.0;
+
+                        GradN_eta_gp[20][i] =
+                                xi[i] * zeta[i] * (std::pow(xi[i], 2.0) - 1.0) * (zeta[i] - 1.0);
+
                         GradN_eta_gp[21][i] =
-                                ((2 * eta[i] - 1.0) * (std::pow(xi[i], 2) - 1.0) * (std::pow(zeta[i], 2) - 1.0)) / 2;
-                        GradN_eta_gp[22][i] = eta[i] * xi[i] * (std::pow(zeta[i], 2) - 1.0) * (xi[i] + 1.0);
+                                ((2.0 * eta[i] - 1.0) * (std::pow(xi[i], 2.0) - 1.0) * (std::pow(zeta[i], 2.0) - 1.0)) / 2.0;
+
+                        GradN_eta_gp[22][i] =
+                                eta[i] * xi[i] * (std::pow(zeta[i], 2.0) - 1.0) * (xi[i] + 1.0);
+
                         GradN_eta_gp[23][i] =
-                                ((2 * eta[i] + 1.0) * (std::pow(xi[i], 2) - 1.0) * (std::pow(zeta[i], 2) - 1.0)) / 2;
-                        GradN_eta_gp[24][i] = eta[i] * xi[i] * (std::pow(zeta[i], 2) - 1.0) * (xi[i] - 1.0);
-                        GradN_eta_gp[25][i] = eta[i] * zeta[i] * (std::pow(xi[i], 2) - 1.0) * (zeta[i] + 1.0);
-                        GradN_eta_gp[26][i] = -2 * eta[i] * (std::pow(xi[i], 2) - 1.0) * (std::pow(zeta[i], 2) - 1.0);
+                                ((2.0 * eta[i] + 1.0) * (std::pow(xi[i], 2.0) - 1.0) * (std::pow(zeta[i], 2.0) - 1.0)) / 2.0;
+
+                        GradN_eta_gp[24][i] =
+                                eta[i] * xi[i] * (std::pow(zeta[i], 2.0) - 1.0) * (xi[i] - 1.0);
+
+                        GradN_eta_gp[25][i] =
+                                eta[i] * zeta[i] * (std::pow(xi[i], 2.0) - 1.0) * (zeta[i] + 1.0);
+
+                        GradN_eta_gp[26][i] =
+                                -2.0 * eta[i] * (std::pow(xi[i], 2.0) - 1.0) * (std::pow(zeta[i], 2.0) - 1.0);
 
                         GradN_zeta_gp[0][i] =
-                                (eta[i] * xi[i] * (2 * zeta[i] - 1.0) * (eta[i] - 1.0) * (xi[i] - 1.0)) / 8;
+                                (eta[i] * xi[i] * (2.0 * zeta[i] - 1.0) * (eta[i] - 1.0) * (xi[i] - 1.0)) / 8.0;
+
                         GradN_zeta_gp[1][i] =
-                                (eta[i] * xi[i] * (2 * zeta[i] - 1.0) * (eta[i] - 1.0) * (xi[i] + 1.0)) / 8;
+                                (eta[i] * xi[i] * (2.0 * zeta[i] - 1.0) * (eta[i] - 1.0) * (xi[i] + 1.0)) / 8.0;
+
                         GradN_zeta_gp[2][i] =
-                                (eta[i] * xi[i] * (2 * zeta[i] - 1.0) * (eta[i] + 1.0) * (xi[i] + 1.0)) / 8;
+                                (eta[i] * xi[i] * (2.0 * zeta[i] - 1.0) * (eta[i] + 1.0) * (xi[i] + 1.0)) / 8.0;
+
                         GradN_zeta_gp[3][i] =
-                                (eta[i] * xi[i] * (2 * zeta[i] - 1.0) * (eta[i] + 1.0) * (xi[i] - 1.0)) / 8;
+                                (eta[i] * xi[i] * (2.0 * zeta[i] - 1.0) * (eta[i] + 1.0) * (xi[i] - 1.0)) / 8.0;
+
                         GradN_zeta_gp[4][i] =
-                                (eta[i] * xi[i] * (2 * zeta[i] + 1.0) * (eta[i] - 1.0) * (xi[i] - 1.0)) / 8;
+                                (eta[i] * xi[i] * (2.0 * zeta[i] + 1.0) * (eta[i] - 1.0) * (xi[i] - 1.0)) / 8.0;
+
                         GradN_zeta_gp[5][i] =
-                                (eta[i] * xi[i] * (2 * zeta[i] + 1.0) * (eta[i] - 1.0) * (xi[i] + 1.0)) / 8;
+                                (eta[i] * xi[i] * (2.0 * zeta[i] + 1.0) * (eta[i] - 1.0) * (xi[i] + 1.0)) / 8.0;
+
                         GradN_zeta_gp[6][i] =
-                                (eta[i] * xi[i] * (2 * zeta[i] + 1.0) * (eta[i] + 1.0) * (xi[i] + 1.0)) / 8;
+                                (eta[i] * xi[i] * (2.0 * zeta[i] + 1.0) * (eta[i] + 1.0) * (xi[i] + 1.0)) / 8.0;
+
                         GradN_zeta_gp[7][i] =
-                                (eta[i] * xi[i] * (2 * zeta[i] + 1.0) * (eta[i] + 1.0) * (xi[i] - 1.0)) / 8;
+                                (eta[i] * xi[i] * (2.0 * zeta[i] + 1.0) * (eta[i] + 1.0) * (xi[i] - 1.0)) / 8.0;
+
                         GradN_zeta_gp[8][i] =
-                                -(eta[i] * (std::pow(xi[i], 2) - 1.0) * (2 * zeta[i] - 1.0) * (eta[i] - 1.0)) / 4;
+                                -(eta[i] * (std::pow(xi[i], 2.0) - 1.0) * (2.0 * zeta[i] - 1.0) * (eta[i] - 1.0)) / 4.0;
+
                         GradN_zeta_gp[9][i] =
-                                -(xi[i] * (std::pow(eta[i], 2) - 1.0) * (2 * zeta[i] - 1.0) * (xi[i] + 1.0)) / 4;
+                                -(xi[i] * (std::pow(eta[i], 2.0) - 1.0) * (2.0 * zeta[i] - 1.0) * (xi[i] + 1.0)) / 4.0;
+
                         GradN_zeta_gp[10][i] =
-                                -(eta[i] * (std::pow(xi[i], 2) - 1.0) * (2 * zeta[i] - 1.0) * (eta[i] + 1.0)) / 4;
+                                -(eta[i] * (std::pow(xi[i], 2.0) - 1.0) * (2.0 * zeta[i] - 1.0) * (eta[i] + 1.0)) / 4.0;
+
                         GradN_zeta_gp[11][i] =
-                                -(xi[i] * (std::pow(eta[i], 2) - 1.0) * (2 * zeta[i] - 1.0) * (xi[i] - 1.0)) / 4;
-                        GradN_zeta_gp[12][i] = -(eta[i] * xi[i] * zeta[i] * (eta[i] - 1.0) * (xi[i] - 1.0)) / 2;
-                        GradN_zeta_gp[13][i] = -(eta[i] * xi[i] * zeta[i] * (eta[i] - 1.0) * (xi[i] + 1.0)) / 2;
-                        GradN_zeta_gp[14][i] = -(eta[i] * xi[i] * zeta[i] * (eta[i] + 1.0) * (xi[i] + 1.0)) / 2;
-                        GradN_zeta_gp[15][i] = -(eta[i] * xi[i] * zeta[i] * (eta[i] + 1.0) * (xi[i] - 1.0)) / 2;
+                                -(xi[i] * (std::pow(eta[i], 2.0) - 1.0) * (2.0 * zeta[i] - 1.0) * (xi[i] - 1.0)) / 4.0;
+
+                        GradN_zeta_gp[12][i] =
+                                -(eta[i] * xi[i] * zeta[i] * (eta[i] - 1.0) * (xi[i] - 1.0)) / 2.0;
+
+                        GradN_zeta_gp[13][i] =
+                                -(eta[i] * xi[i] * zeta[i] * (eta[i] - 1.0) * (xi[i] + 1.0)) / 2.0;
+
+                        GradN_zeta_gp[14][i] =
+                                -(eta[i] * xi[i] * zeta[i] * (eta[i] + 1.0) * (xi[i] + 1.0)) / 2.0;
+
+                        GradN_zeta_gp[15][i] =
+                                -(eta[i] * xi[i] * zeta[i] * (eta[i] + 1.0) * (xi[i] - 1.0)) / 2.0;
+
                         GradN_zeta_gp[16][i] =
-                                -(eta[i] * (std::pow(xi[i], 2) - 1.0) * (2 * zeta[i] + 1.0) * (eta[i] - 1.0)) / 4;
+                                -(eta[i] * (std::pow(xi[i], 2.0) - 1.0) * (2.0 * zeta[i] + 1.0) * (eta[i] - 1.0)) / 4.0;
+
                         GradN_zeta_gp[17][i] =
-                                -(xi[i] * (std::pow(eta[i], 2) - 1.0) * (2 * zeta[i] + 1.0) * (xi[i] + 1.0)) / 4;
+                                -(xi[i] * (std::pow(eta[i], 2.0) - 1.0) * (2.0 * zeta[i] + 1.0) * (xi[i] + 1.0)) / 4.0;
+
                         GradN_zeta_gp[18][i] =
-                                -(eta[i] * (std::pow(xi[i], 2) - 1.0) * (2 * zeta[i] + 1.0) * (eta[i] + 1.0)) / 4;
+                                -(eta[i] * (std::pow(xi[i], 2.0) - 1.0) * (2.0 * zeta[i] + 1.0) * (eta[i] + 1.0)) / 4.0;
+
                         GradN_zeta_gp[19][i] =
-                                -(xi[i] * (std::pow(eta[i], 2) - 1.0) * (2 * zeta[i] + 1.0) * (xi[i] - 1.0)) / 4;
+                                -(xi[i] * (std::pow(eta[i], 2.0) - 1.0) * (2.0 * zeta[i] + 1.0) * (xi[i] - 1.0)) / 4.0;
+
                         GradN_zeta_gp[20][i] =
-                                ((std::pow(eta[i], 2) - 1.0) * (std::pow(xi[i], 2) - 1.0) * (2 * zeta[i] - 1.0)) / 2;
-                        GradN_zeta_gp[21][i] = eta[i] * zeta[i] * (std::pow(xi[i], 2) - 1.0) * (eta[i] - 1.0);
-                        GradN_zeta_gp[22][i] = xi[i] * zeta[i] * (std::pow(eta[i], 2) - 1.0) * (xi[i] + 1.0);
-                        GradN_zeta_gp[23][i] = eta[i] * zeta[i] * (std::pow(xi[i], 2) - 1.0) * (eta[i] + 1.0);
-                        GradN_zeta_gp[24][i] = xi[i] * zeta[i] * (std::pow(eta[i], 2) - 1.0) * (xi[i] - 1.0);
+                                ((std::pow(eta[i], 2.0) - 1.0) * (std::pow(xi[i], 2.0) - 1.0) * (2.0 * zeta[i] - 1.0)) / 2.0;
+
+                        GradN_zeta_gp[21][i] =
+                                eta[i] * zeta[i] * (std::pow(xi[i], 2.0) - 1.0) * (eta[i] - 1.0);
+
+                        GradN_zeta_gp[22][i] =
+                                xi[i] * zeta[i] * (std::pow(eta[i], 2.0) - 1.0) * (xi[i] + 1.0);
+
+                        GradN_zeta_gp[23][i] =
+                                eta[i] * zeta[i] * (std::pow(xi[i], 2.0) - 1.0) * (eta[i] + 1.0);
+
+                        GradN_zeta_gp[24][i] =
+                                xi[i] * zeta[i] * (std::pow(eta[i], 2.0) - 1.0) * (xi[i] - 1.0);
+
                         GradN_zeta_gp[25][i] =
-                                ((std::pow(eta[i], 2) - 1.0) * (std::pow(xi[i], 2) - 1.0) * (2 * zeta[i] + 1.0)) / 2;
-                        GradN_zeta_gp[26][i] = -2 * zeta[i] * (std::pow(eta[i], 2) - 1.0) * (std::pow(xi[i], 2) - 1.0);
+                                ((std::pow(eta[i], 2.0) - 1.0) * (std::pow(xi[i], 2.0) - 1.0) * (2.0 * zeta[i] + 1.0)) / 2.0;
+
+                        GradN_zeta_gp[26][i] =
+                                -2.0 * zeta[i] * (std::pow(eta[i], 2.0) - 1.0) * (std::pow(xi[i], 2.0) - 1.0);
                     }
                     break;
                 case 3:
@@ -1017,59 +1218,65 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                     GradN_zeta_gp.resize(64, std::vector<double>(NGP));
 
                     for (int i = 0; i < 64; i++) {
-                        N_xi_gp[0][i] = -((9 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9 * xi[i]) / 16.0 + 3.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) *
+                        N_xi_gp[0][i] = -((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 3.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) *
                                         (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) * (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
-                        N_xi_gp[1][i] = ((9 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) *
+
+                        N_xi_gp[1][i] = ((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 9.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) *
                                         (xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) * (zeta[i] - 1.0) *
                                         (zeta[i] - 1.0 / 3.0);
-                        N_xi_gp[2][i] = -((9 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
-                                        (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) *
-                                        (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
-                        N_xi_gp[3][i] = ((9 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9 * xi[i]) / 16.0 + 3.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
-                                        (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) * (zeta[i] - 1.0) *
-                                        (zeta[i] - 1.0 / 3.0);
-                        N_xi_gp[4][i] = ((9 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9 * xi[i]) / 16.0 + 3.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 9.0 / 16.0) * (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) *
-                                        (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) * (zeta[i] - 1.0 / 3.0) *
-                                        (zeta[i] + 1.0 / 3.0);
-                        N_xi_gp[5][i] = -((9 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 9.0 / 16.0) * (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) *
-                                        (xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) * (zeta[i] - 1.0 / 3.0) *
-                                        (zeta[i] + 1.0 / 3.0);
-                        N_xi_gp[6][i] = ((9 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 9.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
+
+                        N_xi_gp[2][i] = -((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 9.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 9.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
                                         (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) *
                                         (zeta[i] - 1.0 / 3.0) * (zeta[i] + 1.0 / 3.0);
-                        N_xi_gp[7][i] = -((9 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9 * xi[i]) / 16.0 + 3.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 9.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
+
+                        N_xi_gp[3][i] = ((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 3.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
+                                        (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) *
+                                        (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
+
+                        N_xi_gp[4][i] = ((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 3.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) *
+                                        (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) *
+                                        (zeta[i] - 1.0 / 3.0) * (zeta[i] + 1.0 / 3.0);
+
+                        N_xi_gp[5][i] = -((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) *
+                                        (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) *
+                                        (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
+
+                        N_xi_gp[6][i] = ((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 9.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 9.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
+                                        (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) *
+                                        (zeta[i] - 1.0 / 3.0) * (zeta[i] + 1.0 / 3.0);
+
+                        N_xi_gp[7][i] = -((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 3.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 9.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
                                         (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) *
                                         (zeta[i] - 1.0 / 3.0) * (zeta[i] + 1.0 / 3.0);
-                        N_xi_gp[8][i] = ((9 * eta[i]) / 16.0 + 3.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) *
-                                        (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) * (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
-                        N_xi_gp[9][i] = -((9 * eta[i]) / 16.0 + 3.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
-                                        ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) *
-                                        (xi[i] - 1.0) * (xi[i] + 1.0 / 3.0) * (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
-                        N_xi_gp[10][i] = -((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
-                                         ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) * (eta[i] - 1.0 / 3.0) *
-                                         (xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) * (zeta[i] - 1.0) *
-                                         (zeta[i] - 1.0 / 3.0);
-                        N_xi_gp[11][i] = ((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9 * xi[i]) / 16.0 + 9.0 / 16.0) *
-                                         ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) * (eta[i] + 1.0 / 3.0) *
-                                         (xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) * (zeta[i] - 1.0) *
-                                         (zeta[i] - 1.0 / 3.0);
-                        N_xi_gp[12][i] = ((9 * eta[i]) / 16.0 + 9.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
-                                         ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
-                                         (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] + 1.0 / 3.0) * (zeta[i] - 1.0) *
-                                         (zeta[i] - 1.0 / 3.0);
-                        N_xi_gp[13][i] = -((9 * eta[i]) / 16.0 + 9.0 / 16.0) * ((27 * xi[i]) / 16.0 + 27.0 / 16.0) *
-                                         ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
-                                         (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) * (zeta[i] - 1.0) *
-                                         (zeta[i] - 1.0 / 3.0);
+
+                        N_xi_gp[8][i] = ((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) *
+                                        (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) *
+                                        (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
+
+                        N_xi_gp[9][i] = -((9.0 * eta[i]) / 16.0 + 3.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                                        ((9.0 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) *
+                                        (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] + 1.0 / 3.0) *
+                                        (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
+
+                        N_xi_gp[10][i] = -((27.0 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9.0 * xi[i]) / 16.0 + 9.0 / 16.0) *
+                                         ((9.0 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) *
+                                         (eta[i] - 1.0 / 3.0) * (xi[i] - 1.0 / 3.0) * (xi[i] + 1.0 / 3.0) *
+                                         (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
+
+                        N_xi_gp[13][i] = -((9.0 * eta[i]) / 16.0 + 9.0 / 16.0) * ((27.0 * xi[i]) / 16.0 + 27.0 / 16.0) *
+                                         ((9.0 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0 / 3.0) *
+                                         (eta[i] + 1.0 / 3.0) * (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) *
+                                         (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
+
                         N_xi_gp[14][i] = -((27 * eta[i]) / 16.0 + 27.0 / 16.0) * ((9 * xi[i]) / 16.0 + 3.0 / 16.0) *
                                          ((9 * zeta[i]) / 16.0 + 3.0 / 16.0) * (eta[i] - 1.0) * (eta[i] + 1.0 / 3.0) *
                                          (xi[i] - 1.0) * (xi[i] - 1.0 / 3.0) * (zeta[i] - 1.0) * (zeta[i] - 1.0 / 3.0);
@@ -4158,5 +4365,40 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                     break;
             }
     }
-    return std::make_pair(N_xi_gp , GradN_xi_gp);
+
+
+    //printMatrix(GradN_xi_gp, "2 ");
+    //printMatrix(GradN_eta_gp, " 2");
+    //printMatrix(GradN_zeta_gp, "2 ");
+
+    size_t rows = GradN_xi_gp.size();
+    size_t cols = GradN_xi_gp[0].size();
+
+    // Result matrix: rows x (3 * cols) to store the distributed values
+    std::vector<std::vector<double>> result(rows, std::vector<double>(3 * cols, 0.0));
+
+    // Populate `result` using the offset pattern (equivalent to MATLAB indexing)
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
+            size_t baseIdx = 3 * j;  // Compute the correct position
+            result[i][baseIdx] = GradN_xi_gp[i][j];
+            result[i][baseIdx + 1] = GradN_eta_gp[i][j];
+            result[i][baseIdx + 2] = GradN_zeta_gp[i][j];
+        }
+    }
+    //printMatrix(result, "4 ");
+    return std::make_pair(N_xi_gp , result);
+}
+
+
+void printMatrix(const std::vector<std::vector<double>>& matrix, const std::string& name = "Matrix") {
+    std::cout << name << ":\n";
+    for (size_t i = 0; i < matrix.size(); ++i) {
+        std::cout << "Row " << i << ": ";
+        for (double value : matrix[i]) {
+            std::cout << value << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }

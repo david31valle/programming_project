@@ -68,7 +68,8 @@ initialize(int problem_dimension, Eigen::MatrixXd &node_list, Eigen::MatrixXd &e
     }
 
     std::vector<element> Element_List;
-    for (int i = 0; i < nodes_per_elements; ++i) {
+
+    for (int i = 0; i < number_of_elements; ++i) {
         Eigen::MatrixXd X = Eigen::MatrixXd::Zero(problem_dimension, nodes_per_elements);  // Initialize (PD x NPE) matrix
 
         Eigen::MatrixXd NdL = element_list.row(i);  // Extract node indices for element i

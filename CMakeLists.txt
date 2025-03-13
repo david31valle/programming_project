@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.16)
 project(programming_project)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -25,5 +26,14 @@ add_executable(programming_project
         Problem/problem.hpp
         Problem/problem.cpp
 
+
 )
 
+add_executable(
+        tests.cpp
+        utils/utils.hpp
+        utils/utils.cpp
+        tests.cpp
+        utils/NaturalElement.h
+
+)

@@ -7,13 +7,13 @@ std::pair<Eigen::MatrixXd , Eigen::MatrixXd> generate_mesh(int domain_size, int 
         switch (problem_dimension) {
             case 1: {
                 //------------ 1D Mesh ------------
-                std::cout << "Generating 1D Mesh...\n";
+                //std::cout << "Generating 1D Mesh...\n";
                 std::vector<int> element_orders = {element_order};
 
                 // Create and generate the 1D mesh
                 Mesh_1D mesh(domain_size, partition, element_orders);
                 mesh.generateMesh();
-                mesh.printMesh();
+                //mesh.printMesh();
 
                 generated_mesh.first=mesh.getNodeList();
                 generated_mesh.second=mesh.getElementLists()[0];
@@ -22,12 +22,12 @@ std::pair<Eigen::MatrixXd , Eigen::MatrixXd> generate_mesh(int domain_size, int 
 
             case 2: {
                 //------------ 2D Mesh ------------
-                std::cout << "Generating 2D Mesh...\n";
+                //std::cout << "Generating 2D Mesh...\n";
                 std::vector<int> element_orders = {element_order, element_order};
 
                 Mesh_2D mesh(domain_size, partition, element_orders);
                 mesh.generateMesh();
-                mesh.printMesh();
+                //mesh.printMesh();
 
                 generated_mesh.first = mesh.getNodeList();
                 generated_mesh.second = mesh.getElementLists()[0];
@@ -40,9 +40,11 @@ std::pair<Eigen::MatrixXd , Eigen::MatrixXd> generate_mesh(int domain_size, int 
 
                 Mesh_3D mesh(domain_size, partition, element_orders);
                 mesh.generateMesh();
-                mesh.printMesh();
+                //mesh.printMesh();
 
-                generated_mesh.first = mesh.getNodeList();
+                Eigen::Matrix nl=mesh.getNodeList();
+                nl.col(0).swap(nl.col(2));
+                generated_mesh.first = nl;
                 generated_mesh.second = mesh.getElementLists()[0];
                 break;
             }

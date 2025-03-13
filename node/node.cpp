@@ -50,3 +50,42 @@ void node::initialization(int PD) {
     gauss_point_values.setZero();
 }
 
+void node::printNodeData() const {
+    std::cout << "Node Number: " << node_number << std::endl;
+    std::cout << "Problem Dimension: " << problem_dimension << std::endl;
+
+    std::cout << "Material Position (X):" << std::endl;
+    std::cout << X_material_position << std::endl;
+
+    std::cout << "Spatial Position (x):" << std::endl;
+    std::cout << x_spatial_position << std::endl;
+
+    std::cout << "Element List: ";
+    for (const auto& elem : element_list) {
+        std::cout << elem << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Boundary Conditions:" << std::endl;
+    std::cout << boundary_condition.transpose() << std::endl;
+
+    std::cout << "Boundary Condition Values:" << std::endl;
+    std::cout << boundary_condition_value.transpose() << std::endl;
+
+    std::cout << "Degrees of Freedom (DOF):" << std::endl;
+    std::cout << DOF.transpose() << std::endl;
+
+    std::cout << "Degree Constrained:" << std::endl;
+    std::cout << degree_constrained.transpose() << std::endl;
+
+    std::cout << "Global Indices:" << std::endl;
+    std::cout << global_index.transpose() << std::endl;
+
+    std::cout << "Element List: ";
+    for (const auto& elem : element_list) {
+        std::cout << elem << " ";
+    }
+    std::cout << std::endl;
+}
+
+

@@ -16,6 +16,7 @@
 #ifndef PROGRAMMING_PROJECT_NODE_HPP
 #define PROGRAMMING_PROJECT_NODE_HPP
 #include "../Eigen/Dense"
+#include <iostream>
 
 class node {
 public:
@@ -37,7 +38,7 @@ public:
     Eigen::VectorXd gauss_point_BC;
     Eigen::VectorXd gauss_point_DOF;
     Eigen::VectorXd gauss_point_values;
-
+    void printNodeData() const;
 
 private:
     void initialization(int PD);

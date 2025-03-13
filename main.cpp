@@ -26,8 +26,10 @@ int main() {
     auto start = std::chrono::high_resolution_clock::now();
 
     auto [node_list, element_list]=generate_mesh(domain_size, partition, element_order, problem_dimension);
+    element_list.array() -= 1;
     auto [Node_List, Element_List]=initialize(problem_dimension, node_list, element_list, domain_size, element_order, lambda, mu);
 
+    //Element_List[0].printElementData();
 
     problem fem_problem(problem_dimension, Node_List, Element_List, domain_size,
                         boundary_condition, deformation_type, element_order, d,
