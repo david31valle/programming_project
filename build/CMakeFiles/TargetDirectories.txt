@@ -1,4 +1,0 @@
-D:/Maitreya_Docs/Education/MS_in_Deutschland/FAU-Erlangen/Comp_Eng/Studies/3_WiSe_2024-25/FEM Project/Coupled-FEM/build/CMakeFiles/programming_project.dir
-D:/Maitreya_Docs/Education/MS_in_Deutschland/FAU-Erlangen/Comp_Eng/Studies/3_WiSe_2024-25/FEM Project/Coupled-FEM/build/CMakeFiles/testing.dir
-D:/Maitreya_Docs/Education/MS_in_Deutschland/FAU-Erlangen/Comp_Eng/Studies/3_WiSe_2024-25/FEM Project/Coupled-FEM/build/CMakeFiles/edit_cache.dir
-D:/Maitreya_Docs/Education/MS_in_Deutschland/FAU-Erlangen/Comp_Eng/Studies/3_WiSe_2024-25/FEM Project/Coupled-FEM/build/CMakeFiles/rebuild_cache.dir

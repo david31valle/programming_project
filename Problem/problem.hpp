@@ -26,7 +26,7 @@ public:
     std::string deformation_type;
     int element_order;
     double d;
-    int steps;
+    double steps;
     int max_iter;
     double tol;
     std::string gauss_points_values;
@@ -49,7 +49,7 @@ public:
     Eigen::MatrixXd Kuu;
     Eigen::MatrixXd Kpu;
     Eigen::MatrixXd Kpp;
-
+    std::vector<int> unknown_indices;
     // Constructor
     problem(int problem_dimension,
             const std::vector<node>& Node_List,
@@ -59,7 +59,7 @@ public:
             const std::string& deformation_type,
             int element_order,
             double d,
-            int steps,
+            double steps,
             int max_iter,
             double tol,
             const std::string& gauss_points_values);

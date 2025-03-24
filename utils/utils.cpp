@@ -4374,16 +4374,30 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
     size_t rows = GradN_xi_gp.size();
     size_t cols = GradN_xi_gp[0].size();
 
-    // Result matrix: rows x (3 * cols) to store the distributed values
-    std::vector<std::vector<double>> result(rows, std::vector<double>(3 * cols, 0.0));
+// Declare result once, then resize based on PD.
+    std::vector<std::vector<double>> result;
+    if (PD == 1) {
+        result.resize(rows, std::vector<double>(1 * cols, 0.0));
+    } else if (PD == 2) {
+        result.resize(rows, std::vector<double>(2 * cols, 0.0));
+    } else if (PD == 3) {
+        result.resize(rows, std::vector<double>(3 * cols, 0.0));
+    } else {
+        // Optionally handle unexpected PD values here.
+        result.resize(rows, std::vector<double>(3 * cols, 0.0));
+    }
 
-    // Populate `result` using the offset pattern (equivalent to MATLAB indexing)
+// Populate 'result' using an offset based on PD
     for (size_t i = 0; i < rows; ++i) {
         for (size_t j = 0; j < cols; ++j) {
-            size_t baseIdx = 3 * j;  // Compute the correct position
+            size_t baseIdx = PD * j;  // Adjust offset using PD
             result[i][baseIdx] = GradN_xi_gp[i][j];
-            result[i][baseIdx + 1] = GradN_eta_gp[i][j];
-            result[i][baseIdx + 2] = GradN_zeta_gp[i][j];
+            if (PD >= 2) {
+                result[i][baseIdx + 1] = GradN_eta_gp[i][j];
+            }
+            if (PD >= 3) {
+                result[i][baseIdx + 2] = GradN_zeta_gp[i][j];
+            }
         }
     }
     //printMatrix(result, "4 ");

@@ -82,6 +82,7 @@ initialize(int problem_dimension, Eigen::MatrixXd &node_list, Eigen::MatrixXd &e
         Eigen::MatrixXd x = X;  // Equivalent to 'x = X' in MATLAB
 
         // Create and store the element
+        element test=element(i, problem_dimension, NdL, X, x, NGP, element_order, lamda, mu);
         Element_List.push_back(element(i, problem_dimension, NdL, X, x, NGP, element_order, lamda, mu));
         ;
     }

@@ -6,7 +6,7 @@
 
 problem::problem(int problem_dimension, const std::vector<node>& Node_List, const std::vector<element>& Element_List,
                  int domain_size, const std::string& boundary_condition, const std::string& deformation_type,
-                 int element_order, double d, int steps, int max_iter, double tol, const std::string& gauss_points_values)
+                 int element_order, double d, double steps, int max_iter, double tol, const std::string& gauss_points_values)
         : problem_dimension(problem_dimension), Node_List(Node_List), Element_List(Element_List),
           boundary_condition(boundary_condition), domain_size(domain_size), deformation_type(deformation_type),
           element_order(element_order), d(d), steps(steps), max_iter(max_iter), tol(tol),
@@ -25,11 +25,10 @@ problem::problem(int problem_dimension, const std::vector<node>& Node_List, cons
     if(gauss_points_values=="On"){
         Assign_GP_DOFs();
     }
-    problem_info();
     //Newton-Raphson method
 
     int counter = 1;
-    double load_step=1/steps;
+    double load_step=1.0/steps;
 
     while (load_factor <= 1.0 + 1e-8) { // Load step iteration
         std::cout << "\nLoad factor: " << load_factor << std::endl;
@@ -41,9 +40,11 @@ problem::problem(int problem_dimension, const std::vector<node>& Node_List, cons
         int error_counter = 1;
         bool isNotAccurate = true;
 
-        while (isNotAccurate) { // Newton-Raphson loop
-            assemble(); // Assemble global stiffness matrix and residual
+        while (isNotAccurate) { // Newton-Raphson
+            problem_info();
 
+            assemble(); // Assemble global stiffness matrix and residual
+            std::cout<<Rtot<<std::endl;
             // Compute initial residual norm
             if (error_counter == 1) {
                 double Norm_R0 = Rtot.norm();
@@ -279,25 +280,26 @@ void problem::assemble() {
     std::vector<Eigen::Triplet<double>> tripletList;
 
     // Generate all node indices
-    std::vector<int> allIndices(NoNs * problem_dimension);
-    std::iota(allIndices.begin(), allIndices.end(), 0);  // Fill with 0 to NoNs*PD-1
-    std::transform(CNL.begin(), CNL.end(), CNL.begin(), [](int x) { return x - 1; });
+    if (unknown_indices.empty()) {
+        std::vector<int> allIndices(NoNs * problem_dimension);
+        std::iota(allIndices.begin(), allIndices.end(), 0);  // Fill with 0 to NoNs*PD-1
+        std::transform(CNL.begin(), CNL.end(), CNL.begin(), [](int x) { return x - 1; });
 
-    // Identify unknown indices (excluding constrained and prescribed nodes)
-    std::vector<int> temp_indices;
-    std::set_difference(
-            allIndices.begin(), allIndices.end(),
-            CNL.begin(), CNL.end(),
-            std::back_inserter(temp_indices));
+        // Identify unknown indices (excluding constrained and prescribed nodes)
+        std::vector<int> temp_indices;
+        std::set_difference(
+                allIndices.begin(), allIndices.end(),
+                CNL.begin(), CNL.end(),
+                std::back_inserter(temp_indices));
 
 // Now remove PNL from temp_indices to get final unknown_indices
-    std::transform(PNL.begin(), PNL.end(), PNL.begin(), [](int x) { return x - 1; });
-    std::vector<int> unknown_indices;
-    std::set_difference(
-            temp_indices.begin(), temp_indices.end(),
-            PNL.begin(), PNL.end(),
-            std::back_inserter(unknown_indices));
+        std::transform(PNL.begin(), PNL.end(), PNL.begin(), [](int x) { return x - 1; });
 
+        std::set_difference(
+                temp_indices.begin(), temp_indices.end(),
+                PNL.begin(), PNL.end(),
+                std::back_inserter(unknown_indices));
+    }
     Eigen::MatrixXd Total_stiffness_matrix = Eigen::MatrixXd::Zero(NoNs*problem_dimension ,NoNs*problem_dimension );
     for (int e = 0; e < NoEs; ++e) {
         // Retrieve element stiffness matrix and residual vector
@@ -400,70 +402,69 @@ void problem::update(const Eigen::VectorXd& dx) {
 
     // === Update nodal positions ===
     for (int i = 0; i < NoNs; ++i) {
-        // Retrieve boundary condition, DOF numbering, and current spatial position of node i
         Eigen::VectorXd& BC = Node_List[i].boundary_condition;
         Eigen::VectorXd& DOF = Node_List[i].DOF;
         Eigen::VectorXd x = Node_List[i].x_spatial_position;
 
-        // Loop over each degree of freedom for this node
         for (int p = 0; p < BC.size(); ++p) {
-            if (BC(p) == 1) { // Only update if the DOF is free
-                // Note: DOF is assumed to be 1-indexed, so subtract 1 for C++ indexing
+            if (BC(p) == 1) {
+                // Subtract 1 if DOF is 1-based (MATLAB) to convert to C++ indexing
                 x(p) += dx(static_cast<int>(DOF(p)) - 1);
             }
         }
-        // Store the updated nodal position back in the node structure
-        Node_List[i].x_spatial_position = x;
+        Node_List[i].x_spatial_position = x;  // Store updated position
     }
 
     // === Update element spatial coordinates ===
     for (int e = 0; e < NoEs; ++e) {
         int NPE = Element_List[e].node_per_element;  // Nodes per element
-        Eigen::MatrixXd x(PD, NPE);  // Temporary matrix to store element nodal positions
+        Eigen::MatrixXd x(PD, NPE);  // Temporary matrix for element positions
 
-        // Extract node list for the current element
-        // (Assume that Element_List[e].node_list is a vector of indices; if it's a row vector,
-        // you may need to transpose it as done here)
-        Eigen::VectorXd NdL = Element_List[e].node_list;
-        NdL.transposeInPlace(); // Ensure NdL is an NPEx1 vector (each entry is the node index)
 
-        // For each node of the element, assign its updated position into the temporary matrix
+        Eigen::MatrixXd NdL = Element_List[e].node_list;
+        NdL.transposeInPlace(); // Convert 1×n matrix to n×1 vector
+
         for (int i = 0; i < NPE; ++i) {
-            // Again, if NdL is 1-indexed (from MATLAB), subtract 1 to get proper C++ index
-            x.col(i) = Node_List[static_cast<int>(NdL(i)) - 1].x_spatial_position;
+
+            int nodeIndex = static_cast<int>(NdL(i)) ;
+            x.col(i) = Node_List[nodeIndex].x_spatial_position;
         }
 
-        // Store the assembled element coordinate matrix back into the element structure
-        Element_List[e].spatial_coordinate = x;
+        Element_List[e].spatial_coordinate = x;  // Store updated spatial positions
     }
 }
 
 
 void problem::Residual(double dt) {
-    int NoEs = Element_List.size();  // Number of elements
-    int NoNs = Node_List.size();     // Number of nodes
-    int PD = problem_dimension;      // Problem dimension
+    int NoEs = Element_List.size();          // Number of elements
+    int NoNs = Node_List.size();             // Number of nodes
+    int PD = problem_dimension;              // Problem dimension
     int NPE = Element_List[0].node_per_element;  // Nodes per element
 
-    // Initialize global residual vector
+    // Initialize the global residual vector to zero.
     Rtot = Eigen::VectorXd::Zero(DOFs);
+    int c=0;
 
     for (int e = 0; e < NoEs; ++e) {
-        // Get element residual vector
+        // Get the element residual vector.
         Eigen::VectorXd R_e = Element_List[e].Residual(dt);
 
-        // Get the nodes of the element
-        Eigen::VectorXd NdL = Element_List[e].node_list;
+        // Retrieve the node list for element e.
+        Eigen::MatrixXd NdL = Element_List[e].node_list;
+        NdL.transposeInPlace(); // Convert 1×n matrix to n×1 vector
 
-        // Assemble global residual vector
+        // Loop over the nodes of this element.
         for (int i = 0; i < NPE; ++i) {
-            Eigen::VectorXd& BC = Node_List[NdL(i)].boundary_condition;
-            Eigen::VectorXd& DOF = Node_List[NdL(i)].DOF;
 
+            int nodeIndex = static_cast<int>(NdL(i)) ;
+
+            // Get the boundary condition and DOF vectors for this node.
+            Eigen::VectorXd& BC = Node_List[nodeIndex].boundary_condition;
+            Eigen::VectorXd& DOF = Node_List[nodeIndex].DOF;
             for (int p = 0; p < PD; ++p) {
-                if (BC(p) == 1) {
-                    int dofIndex = static_cast<int>(DOF(p));
-                    Rtot(dofIndex) += R_e((i * PD) + p);
+                if (BC(p) == 1) { // Only if the DOF is free
+                    int dofIndex = static_cast<int>(DOF(p)) - 1;
+                    Rtot(dofIndex) += R_e(i * PD + p);
                 }
             }
         }
