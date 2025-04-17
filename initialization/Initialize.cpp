@@ -49,7 +49,7 @@ initialize(int problem_dimension, Eigen::MatrixXd &node_list, Eigen::MatrixXd &e
 
     int rows = element_list.rows();
     int cols = element_list.cols();
-    //std::cout<<element_list;
+
     std::vector<node> Node_List;
 
     for (int i = 0; i < number_of_nodes; ++i) {
@@ -62,7 +62,6 @@ initialize(int problem_dimension, Eigen::MatrixXd &node_list, Eigen::MatrixXd &e
                 }
             }
         }
-
         Eigen::VectorXd X = node_list.row(i);
         Node_List.push_back(node(i, problem_dimension, X, X, element_indices));
     }

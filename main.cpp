@@ -31,8 +31,10 @@ int main() {
 
     //Element_List[0].printElementData();
 
-
-    //utils line_882
+    //TO_DO
+    //utils line_882, in 2d jumps to case 3
+    //Proper save in file.
+    //Clean, remove unnecessary comments.
 
     problem fem_problem(problem_dimension, Node_List, Element_List, domain_size,
                         boundary_condition, deformation_type, element_order, d,
