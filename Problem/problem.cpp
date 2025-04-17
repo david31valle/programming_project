@@ -3,24 +3,36 @@
 //
 
 #include "problem.hpp"
-
-problem::problem(int problem_dimension, const std::vector<node>& Node_List, const std::vector<element>& Element_List,
-                 int domain_size, const std::string& boundary_condition, const std::string& deformation_type,
-                 int element_order, double d, double steps, int max_iter, double tol, const std::string& gauss_points_values)
-        : problem_dimension(problem_dimension), Node_List(Node_List), Element_List(Element_List),
-          boundary_condition(boundary_condition), domain_size(domain_size), deformation_type(deformation_type),
-          element_order(element_order), d(d), steps(steps), max_iter(max_iter), tol(tol),
+problem::problem(int problem_dimension,
+                 std::vector<node>& nodeList,
+                 std::vector<element>& elementList,
+                 int domain_size,
+                 const std::string& boundary_condition,
+                 const std::string& deformation_type,
+                 int element_order,
+                 double d,
+                 double steps,
+                 int max_iter,
+                 double tol,
+                 const std::string& gauss_points_values)
+        : problem_dimension(problem_dimension),
+          Node_List(nodeList),
+          Element_List(elementList),
+          boundary_condition(boundary_condition),
+          domain_size(domain_size),
+          deformation_type(deformation_type),
+          element_order(element_order),
+          d(d),
+          steps(steps),
+          max_iter(max_iter),
+          tol(tol),
           gauss_points_values(gauss_points_values) {
 
     filename = std::to_string(problem_dimension) + "D_Normal_" + std::to_string(Element_List[0].node_per_element) +  // Equivalent to `size(EL,2)` in MATLAB
-                           "_EL=[" + std::to_string(element_order) + "]_.txt";
+                           "_EL[" + std::to_string(element_order) + "].txt";
 
     initialize_F();
-    //std::cout<<"F"<<std::endl;
-    //std::cout<<F<<std::endl;
     Assign_BC();
-
-
 
     if(gauss_points_values=="On"){
         Assign_GP_DOFs();
@@ -33,17 +45,18 @@ problem::problem(int problem_dimension, const std::vector<node>& Node_List, cons
     while (load_factor <= 1.0 + 1e-8) { // Load step iteration
         std::cout << "\nLoad factor: " << load_factor << std::endl;
 
-        // Apply load step
         prescribe();
-
         std::ofstream file(filename, std::ios::app);
+
         int error_counter = 1;
         bool isNotAccurate = true;
 
         while (isNotAccurate) { // Newton-Raphson
+
             problem_info();
 
             assemble(); // Assemble global stiffness matrix and residual
+            std::cout<<"Rtot"<<std::endl;
             std::cout<<Rtot<<std::endl;
             // Compute initial residual norm
             if (error_counter == 1) {
@@ -55,14 +68,18 @@ problem::problem(int problem_dimension, const std::vector<node>& Node_List, cons
             }
 
             // Compute displacement increment and update nodal values
-// Solve the linear system: dx = - Kuu \ Rtot
+            // Solve the linear system: dx = - Kuu \ Rtot
+
             Eigen::VectorXd dx = - Kuu.colPivHouseholderQr().solve(Rtot);
             std::cout<<"dx"<<std::endl;
             std::cout<<dx <<std::endl;
 
-// Compute the reaction forces: f_reaction = Kpu * dx
+        // Compute the reaction forces: f_reaction = Kpu * dx
             Eigen::VectorXd f_reaction = Kpu * dx;
 
+        //            for (const auto& n : Node_List) {
+        //                std::cout << "Node " << n.node_number << " spatial position:\n" << n.x_spatial_position << std::endl;
+        //            }
 
             update(dx);
 
@@ -92,10 +109,6 @@ problem::problem(int problem_dimension, const std::vector<node>& Node_List, cons
         counter++;
 
     } // End
-
-
-    std::cout<<"instance created"<<std::endl;
-
 
 }
 
@@ -300,6 +313,7 @@ void problem::assemble() {
                 PNL.begin(), PNL.end(),
                 std::back_inserter(unknown_indices));
     }
+
     Eigen::MatrixXd Total_stiffness_matrix = Eigen::MatrixXd::Zero(NoNs*problem_dimension ,NoNs*problem_dimension );
     for (int e = 0; e < NoEs; ++e) {
         // Retrieve element stiffness matrix and residual vector
@@ -335,24 +349,25 @@ void problem::assemble() {
             for (int p = 0; p < problem_dimension; ++p) {
                 int row = DOF_i(p) - 1;  // Adjust for 0-based indexing
 
-                if (row < 0 || row >= DOFs) continue; // Skip invalid indices
+                //if (row < 0 || row > DOFs) continue; // Skip invalid indices
 
                 for (int j = 0; j < NPE; ++j) {
                     Eigen::VectorXd &DOF_j = Node_List[NdL(j)].global_index;
                     for (int q = 0; q < problem_dimension; ++q) {
                         int col = DOF_j(q) - 1;
 
-                        if (col < 0 || col >= DOFs) continue; // Skip invalid indices
+                        //if (col < 0 || col > DOFs) continue; // Skip invalid indices
 
                         auto temp= K(((i) * problem_dimension) + p, ((j) * problem_dimension) + q);
+
                         Total_stiffness_matrix(row, col) += K(((i) * problem_dimension) + p, ((j) * problem_dimension) + q);
                     }
                 }
             }
         }
     }
-    //std::cout << "Size of Total Stiffness Matrix: " << Total_stiffness_matrix.rows() << " x " << Total_stiffness_matrix.cols() << std::endl;
-    //std::cout<<Total_stiffness_matrix<<std::endl;
+//    std::cout << "Size of Total Stiffness Matrix: " << Total_stiffness_matrix.rows() << " x " << Total_stiffness_matrix.cols() << std::endl;
+//    std::cout<<Total_stiffness_matrix<<std::endl;
 
     // Assuming unknown_indices and PNL are vectors<int> with valid indices
     int Kuu_size = unknown_indices.size();

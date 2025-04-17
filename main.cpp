@@ -21,7 +21,7 @@ int main() {
     int max_iteration = 10;                 // Maximum Newton-Raphson iterations
     double tol = 1e-10;                     // Tolerance for solver convergence
     std::string boundary_condition = "DBC"; // Boundary condition ("DBC", "PBC")
-    std::string gauss_points_values = "Off"; // Output Gauss point values ("On"/"Off")
+    std::string gauss_points_values = "On"; // Output Gauss point values ("On"/"Off")
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -30,7 +30,10 @@ int main() {
     auto [Node_List, Element_List]=initialize(problem_dimension, node_list, element_list, domain_size, element_order, lambda, mu);
 
     //Element_List[0].printElementData();
-int c=0;
+
+
+    //utils line_882
+
     problem fem_problem(problem_dimension, Node_List, Element_List, domain_size,
                         boundary_condition, deformation_type, element_order, d,
                         steps, max_iteration, tol, gauss_points_values);

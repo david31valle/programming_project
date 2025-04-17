@@ -52,8 +52,8 @@ public:
     std::vector<int> unknown_indices;
     // Constructor
     problem(int problem_dimension,
-            const std::vector<node>& Node_List,
-            const std::vector<element>& Element_List,
+            std::vector<node>& nodeList,
+            std::vector<element>& elementList,
             int domain_size,
             const std::string& boundary_condition,
             const std::string& deformation_type,
