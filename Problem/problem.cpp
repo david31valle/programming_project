@@ -182,8 +182,6 @@ void problem::initialize_F() {
             F(0, 1) = d;  // Modify shear component
         }
     }
-
-    ;
 }
 
 void problem::Assign_GP_DOFs() {
@@ -341,7 +339,6 @@ void problem::assemble() {
         }
 
 
-
 // === ASSEMBLE GLOBAL STIFFNESS MATRIX ===
         for (int i = 0; i < NPE; ++i) {
             Eigen::VectorXd &DOF_i = Node_List[NdL(i)].global_index;
@@ -366,8 +363,6 @@ void problem::assemble() {
             }
         }
     }
-//    std::cout << "Size of Total Stiffness Matrix: " << Total_stiffness_matrix.rows() << " x " << Total_stiffness_matrix.cols() << std::endl;
-//    std::cout<<Total_stiffness_matrix<<std::endl;
 
     // Assuming unknown_indices and PNL are vectors<int> with valid indices
     int Kuu_size = unknown_indices.size();
@@ -401,11 +396,6 @@ void problem::assemble() {
         }
     }
 
-// Optionally print these matrices to verify
-    //std::cout << "Kuu Matrix (Unknown indices):\n" << Kuu << std::endl;
-    //std::cout << "Kpu Matrix (Prescribed vs Unknown indices):\n" << Kpu << std::endl;
-// Kpp is not immediately needed
-// std::cout << "Kpp Matrix (Prescribed indices):\n" << Kpp << std::endl;
 }
 
 

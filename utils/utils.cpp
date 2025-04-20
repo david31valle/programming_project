@@ -879,6 +879,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                     }
                     break;
             }
+            break;
 
         case 3 :
             switch (degree) {
@@ -4364,12 +4365,9 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
                     }
                     break;
             }
+            break;
     }
 
-
-    //printMatrix(GradN_xi_gp, "2 ");
-    //printMatrix(GradN_eta_gp, " 2");
-    //printMatrix(GradN_zeta_gp, "2 ");
 
     size_t rows = GradN_xi_gp.size();
     size_t cols = GradN_xi_gp[0].size();
@@ -4400,7 +4398,6 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> co
             }
         }
     }
-    //printMatrix(result, "4 ");
     return std::make_pair(N_xi_gp , result);
 }
 

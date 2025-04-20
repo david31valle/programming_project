@@ -9,9 +9,9 @@
 
 int main() {
     // Input parameters
-    int problem_dimension = 1;              // 1D, 2D, or 3D mesh
+    int problem_dimension = 2;              // 1D, 2D, or 3D mesh
     int element_order = 1;                  // Linear (1), Quadratic (2), Cubic (3)
-    int domain_size = 1;                    // Physical size of the domain
+    int domain_size = 10;                    // Physical size of the domain
     int partition = 4;                      // Number of partitions
     double lambda = 100;                       // Material property (Lame's First Parameter)
     double mu = 10.0f;                            // Material property (Shear modulus)
@@ -21,7 +21,7 @@ int main() {
     int max_iteration = 10;                 // Maximum Newton-Raphson iterations
     double tol = 1e-10;                     // Tolerance for solver convergence
     std::string boundary_condition = "DBC"; // Boundary condition ("DBC", "PBC")
-    std::string gauss_points_values = "On"; // Output Gauss point values ("On"/"Off")
+    std::string gauss_points_values = "Off"; // Output Gauss point values ("On"/"Off")
 
     auto start = std::chrono::high_resolution_clock::now();
 
