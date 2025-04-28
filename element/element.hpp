@@ -1,6 +1,4 @@
-//
-// Created by David Valle on 09-Dec-24.
-//
+
 
 #ifndef PROGRAMMING_PROJECT_ELEMENT_HPP
 #define PROGRAMMING_PROJECT_ELEMENT_HPP

@@ -1,6 +1,4 @@
-//
-// Created by David Valle on 28-Jan-25.
-//
+
 
 #include "utils.hpp"
 

@@ -1,6 +1,4 @@
-//
-// Created by David Valle on 01-Dec-24.
-//
+
 
 #include "node.hpp"
 

@@ -1,6 +1,4 @@
-//
-// Created by David Valle on 05-Mar-25.
-//
+
 
 #include "problem.hpp"
 problem::problem(int problem_dimension,

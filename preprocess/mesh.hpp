@@ -1,6 +1,3 @@
-//
-// Created by David Valle on 05-Mar-25.
-//
 
 #ifndef PROGRAMMING_PROJECT_MESH_HPP
 #define PROGRAMMING_PROJECT_MESH_HPP

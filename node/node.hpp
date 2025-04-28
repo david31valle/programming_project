@@ -1,5 +1,3 @@
-//
-// Created by David Valle on 01-Dec-24.
 
 // example of usage: Eigen::VectorXd X_material_position(problem_dimension);
 //    Eigen::VectorXd x_spatial_position(problem_dimension);
